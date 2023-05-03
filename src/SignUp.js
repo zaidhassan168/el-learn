@@ -17,7 +17,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Zoom from '@mui/material/Zoom';
 
 import { auth } from './Firebase';
-
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/database';
 
 function Copyright(props) {
     return (
@@ -40,6 +41,8 @@ export default function SignUp() {
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
 
 
 
@@ -47,22 +50,45 @@ export default function SignUp() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        // const data = new FormData(event.currentTarget);
-        // console.log({
-        //     email: data.get('email'),
-        //     password: data.get('password'),
-        // });
+        if (!/\S+@\S+\.\S+/.test(email)) {
+            setEmailError("Invalid email");
+            return;
+        }
+
+          // Check if password is valid
+          if (password.length < 6) {
+            setPasswordError("Password must be at least 6 characters");
+            return;
+        }
         auth.createUserWithEmailAndPassword(email, password)
             .then((userCredential) => {
                 // Signed in
                 const user = userCredential.user;
-                // ...
+                firebase.database().ref('users/' + user.uid).set({
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                });
+                console.log(user);
             })
             .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                // ..
+
+                console.log(error.code);
+                switch (error.code) {
+                    case "auth/email-already-in-use":
+                      setEmailError("Email already in use");
+                      break;
+                    case "auth/invalid-email":
+                      setEmailError("Invalid email");
+                      break;
+                    case "auth/weak-password":
+                      setPasswordError("Password too weak");
+                      break;
+                    default:
+                      console.log(error.code);
+                  }
             });
+
 
     };
 
@@ -97,6 +123,7 @@ export default function SignUp() {
                                     id="firstName"
                                     label="First Name"
                                     autoFocus
+                                    onChange={(event) => setFirstName(event.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -107,6 +134,7 @@ export default function SignUp() {
                                     label="Last Name"
                                     name="lastName"
                                     autoComplete="family-name"
+                                    onChange={(event) => setLastName(event.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -118,6 +146,7 @@ export default function SignUp() {
                                     name="email"
                                     autoComplete="email"
                                     onChange={(event) => setEmail(event.target.value)}
+                                    {...(emailError && { error: true, helperText: emailError })}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -130,6 +159,7 @@ export default function SignUp() {
                                     id="password"
                                     autoComplete="new-password"
                                     onChange={(event) => setPassword(event.target.value)}
+                                    {...(passwordError && { error: true, helperText: passwordError })}
                                 />
                             </Grid>
                             <Grid item xs={12}>
