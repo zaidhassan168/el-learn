@@ -14,6 +14,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Zoom from '@mui/material/Zoom';
 
 import { auth } from './Firebase';
 
@@ -70,6 +71,7 @@ export default function SignUp() {
         <ThemeProvider theme={theme}>
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
+                <Zoom in={true} timeout={1000}>
                 <Box
                     sx={{
                         marginTop: 8,
@@ -78,7 +80,7 @@ export default function SignUp() {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                    <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
                         <LockOutlinedIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
@@ -154,6 +156,7 @@ export default function SignUp() {
                         </Grid>
                     </Box>
                 </Box>
+                </Zoom>
                 <Copyright sx={{ mt: 5 }} />
             </Container>
         </ThemeProvider>
