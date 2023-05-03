@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import LandingPage from './LandingPage';
 import SignUp from './SignUp';
+import Home from './Home';
 import Typography from '@mui/material/Typography';
 
 const App = () => {
@@ -15,6 +16,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/home" element={<Home />} />
           </Routes>
         </main>
       </div>
