@@ -42,6 +42,7 @@ function LogIn() {
       .then((userCredential) => {
         const user = userCredential.user;
         console.log(user);
+        localStorage.setItem("user", JSON.stringify(user));
         navigate("/home");
       })
       .catch((error) => {
