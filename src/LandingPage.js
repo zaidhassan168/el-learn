@@ -4,21 +4,22 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import './LandingPage.css';
 import { Link } from 'react-router-dom';
+import Zoom from "@mui/material/Zoom";
 
 const LandingPage = () => {
   return (
     <div className="landing-page">
+      <Zoom in={true} timeout={1000}>
       <AppBar position="static">
         <Toolbar className="nav">
           <div className="nav-left"></div>
           <div className="nav-right">
-            <Button color="inherit">Login</Button>
-            <Link to="/signup" className="signup-link">
-            <Button color="inherit">Sign up</Button>
-            </Link>
+            <Button color="inherit" component={Link} to="/login">Login</Button>
+            <Button color="inherit" component={Link} to="/signup">Sign up</Button>
           </div>
         </Toolbar>
       </AppBar>
+      </Zoom>
       <div className="hero">
         <h1>Learn a New Language Today</h1>
         <p>Start your language learning journey with our interactive tool.</p>
