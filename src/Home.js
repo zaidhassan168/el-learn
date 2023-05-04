@@ -1,23 +1,17 @@
-import React, { useState } from "react";
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
-import HomeIcon from "@mui/icons-material/Home";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import PersonIcon from "@mui/icons-material/Person";
-import {Routes, Route, Link } from "react-router-dom";
-// import MyProgress from "./MyProgress";
-// import MyProfile from "./MyProfile";
-// import HomeLate from "./HomeLate";
-
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {Routes, Route, Link} from 'react-router-dom';
+import {AppBar, Toolbar, IconButton, Typography, List, ListItem, ListItemIcon, ListItemText, Drawer, Button} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import HomeIcon from '@mui/icons-material/Home';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import PersonIcon from '@mui/icons-material/Person';
+import { auth } from './Firebase';
 const drawerWidth = 240;
 
 const styles = {
   root: {
-    display: "flex",
+    display: 'flex',
   },
   drawer: {
     width: drawerWidth,
@@ -28,35 +22,40 @@ const styles = {
   },
   content: {
     flexGrow: 1,
-    padding: "24px",
+    padding: '24px',
   },
   listItem: {
-    textDecoration: "none",
-    color: "#212121",
+    textDecoration: 'none',
+    color: '#212121',
   },
   listItemIcon: {
-    minWidth: "40px",
+    minWidth: '40px',
   },
   listItemSelected: {
-    backgroundColor: "#f4f4f4",
-    "&:hover": {
-      backgroundColor: "#f4f4f4",
+    backgroundColor: '#f4f4f4',
+    '&:hover': {
+      backgroundColor: '#f4f4f4',
     },
   },
 };
 
 function Home() {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const toggleDrawer = (open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
 
-    setOpen(open);
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
+  const handleLogout = () => {
+    // perform logout actions
+    auth.signOut();
+    localStorage.removeItem('user');
+    navigate('/login');
   };
 
   const sideMenu = (
@@ -69,14 +68,14 @@ function Home() {
           <ListItemText primary="Home" />
         </ListItem>
       </List>
-      <Divider />
+      {/* <Divider /> */}
       <List>
         <ListItem
           button
           component={Link}
           to="/my-progress"
           className={styles.listItem}
-          selected={window.location.pathname === "/my-progress"}
+          selected={window.location.pathname === '/my-progress'}
           classes={{
             selected: styles.listItemSelected,
           }}
@@ -91,7 +90,7 @@ function Home() {
           component={Link}
           to="/my-profile"
           className={styles.listItem}
-          selected={window.location.pathname === "/my-profile"}
+          selected={window.location.pathname === '/my-profile'}
           classes={{
             selected: styles.listItemSelected,
           }}
@@ -107,22 +106,36 @@ function Home() {
 
   return (
     <div className={styles.root}>
+      <AppBar position="static">
+        <Toolbar>
+          <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleDrawerOpen}>
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" style={{flexGrow: 1}}>
+            App Name
+          </Typography>
+          <Button color="inherit" onClick={handleLogout}>
+            Logout
+          </Button>
+        </Toolbar>
+      </AppBar>
       <Drawer
         className={styles.drawer}
-        variant="permanent"
+        variant="temporary"
+        anchor="left"
+        open={open}
+        onClose={handleDrawerClose}
         classes={{
           paper: styles.drawerPaper,
         }}
-        anchor="left"
       >
         {sideMenu}
       </Drawer>
       <main className={styles.content}>
         <Routes>
-          {/* <Route exact path="/" component={HomeLate} />
-          <Route path="/my-progress" component={MyProgress} />
-          <Route path="/my-profile" element = {} /> */}
-          <Route path="/home" element={<Home />} />
+          {/* <Route path="/" element={<HomeLate />} />
+          <Route path="/my-progress" element={<MyProgress />} />
+          <Route path="/my-profile" element={<MyProfile />} /> */}
         </Routes>
       </main>
     </div>

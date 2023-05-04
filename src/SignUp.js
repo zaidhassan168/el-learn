@@ -76,6 +76,7 @@ export default function SignUp() {
             email: email,
           });
         console.log(user);
+        localStorage.setItem("user", JSON.stringify(user));
         navigate("/home");
       })
       .catch((error) => {
