@@ -1,4 +1,4 @@
-import {Routes, Route } from 'react-router-dom';
+import {Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navigate } from "react-router-dom";
@@ -16,6 +16,7 @@ import { auth } from './Firebase';
 const App = () => {
   const navigate = useNavigate();
   const currentUser = localStorage.getItem("user");
+  const location = useLocation();
   // useEffect(() => {
   //   const unsubscribe = auth.onAuthStateChanged((user) => {
   //     if (user) {
@@ -31,11 +32,13 @@ const App = () => {
   return (
     // <Router>
       <div className="App">
-        <header>
-          <Zoom in={true} timeout={1000}>
-        <Typography variant="h2" animation="wave" color="rgb(22,95,199)">El-Learn</Typography>
-        </Zoom>
-        </header>
+        {location.pathname === '/' || location.pathname === '/signup' || location.pathname === '/login' ? (
+          <header>
+            <Zoom in={true} timeout={1000}>
+              <Typography variant="h2" animation="wave" color="rgb(22,95,199)">El-Learn</Typography>
+            </Zoom>
+          </header>
+        ) : null}
         <main>
           <Routes>
             <Route path="/" element={<LandingPage />} />
