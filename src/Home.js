@@ -1,22 +1,14 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Routes, Route, Link } from 'react-router-dom';
-import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
-import {
-  Toolbar,
-  IconButton,
-  Typography,
-  List,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  Slide,
-} from '@mui/material';
-import CssBaseline from '@mui/material/CssBaseline';
+import * as React from 'react';
+import { styled, useTheme } from '@mui/material/styles';
+import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import MuiAppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import List from '@mui/material/List';
+import CssBaseline from '@mui/material/CssBaseline';
+import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -26,13 +18,12 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-
-import HomeIcon from '@mui/icons-material/Home';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import PersonIcon from '@mui/icons-material/Person';
 import { auth } from './Firebase';
+import { useNavigate } from "react-router-dom";
+import Button from '@mui/material/Button';
 
 const drawerWidth = 240;
+
 const openedMixin = (theme) => ({
   width: drawerWidth,
   transition: theme.transitions.create('width', {
@@ -80,6 +71,7 @@ const AppBar = styled(MuiAppBar, {
     }),
   }),
 }));
+
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     width: drawerWidth,
@@ -96,75 +88,11 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
   }),
 );
-const styles = {
-  root: {
-    display: 'flex',
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    width: drawerWidth,
-  },
-  content: {
-    flexGrow: 1,
-    padding: '24px',
-  },
-  listItem: {
-    textDecoration: 'none',
-    color: '#212121',
-  },
-  listItemIcon: {
-    minWidth: '40px',
-  },
-  listItemSelected: {
-    backgroundColor: '#f4f4f4',
-    '&:hover': {
-      backgroundColor: '#f4f4f4',
-    },
-  },
-  card: {
-    height: '200px',
-    width: '300px',
-    margin: '20px',
-    padding: '20px',
-    textAlign: 'center',
-    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)',
-  },
-  cardContent: {
-    height: '80%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
-};
 
-function FlashCard({ title, content }) {
-  const [flipped, setFlipped] = useState(false);
-
-  const handleFlip = () => {
-    setFlipped(!flipped);
-  };
-
-  return (
-    <Grid item>
-      <Card sx={styles.card} onClick={handleFlip}>
-        <CardContent sx={styles.cardContent}>
-          <Typography variant="h5" component="h2">
-            {flipped ? content : title}
-          </Typography>
-        </CardContent>
-      </Card>
-    </Grid>
-  );
-}
-
-function Home() {
-  const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
-
+export default function MiniDrawer() {
   const theme = useTheme();
+  const navigate = useNavigate();
+  const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -180,59 +108,26 @@ function Home() {
     navigate('/login');
   };
 
-  const sideMenu = (
-    <div>
-      <List>
-        <ListItem button component={Link} to="/" className={styles.listItem}>
-          <ListItemIcon className={styles.listItemIcon}>
-            <HomeIcon />
-          </ListItemIcon>
-          <ListItemText primary="Home" />
-        </ListItem>
-      </List>
-      <List>
-        <ListItem
-          button
-          component={Link}
-          to="/my-progress"
-          className={styles.listItem}
-          selected={window.location.pathname === '/my-progress'}
-          classes={{
-            selected: styles.listItemSelected,
-          }}
-        >
-          <ListItemIcon className={styles.listItemIcon}>
-            <AssignmentIcon />
-          </ListItemIcon>
-          <ListItemText primary="My Progress" />
-        </ListItem>
-        <ListItem
-          button
-          component={Link}
-          to="/my-profile"
-          className={styles.listItem}
-          selected={window.location.pathname === '/my-profile'}
-          classes={{
-            selected: styles.listItemSelected,
-          }}
-        >
-          <ListItemIcon className={styles.listItemIcon}>
-            <PersonIcon />
-          </ListItemIcon>
-          <ListItemText primary="My Profile" />
-        </ListItem>
-      </List>
-    </div>
-  );
+
 
   return (
-    <div className={styles.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleDrawerOpen}>
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      <AppBar position="fixed" open={open}>
+        <Toolbar  sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            sx={{
+              marginRight: 5,
+              ...(open && { display: 'none' }),
+            }}
+          >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" style={{ flexGrow: 1 }}>
+          <Typography variant="h6" noWrap component="div">
             El-Learn
           </Typography>
           <Button color="inherit" onClick={handleLogout}>
@@ -297,33 +192,36 @@ function Home() {
           ))}
         </List>
       </Drawer>
-      <main className={styles.content}>
-        <Grid container justifyContent="center" alignItems="center" spacing={2}>
-          <FlashCard
-            title="Learn Swedish"
-            content="Swedish is a North Germanic language spoken natively by 10 million people, predominantly in Sweden and in parts of Finland, where it has equal legal standing with Finnish."
-          />
-          <FlashCard
-            title="Learn English"
-            content="English is a West Germanic language that was first spoken in early medieval England and eventually became a global lingua franca. It is widely used in business, science, and entertainment."
-          />
-          <FlashCard
-            title="My Progress"
-            content="You have completed 50% of the course. Keep up the good work!"
-          />
-          <FlashCard
-            title="Random Content"
-            content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, sapien vel bibendum bibendum, nisl sapien bibendum sapien, vel bibendum sapien sapien vel bibendum bibendum."
-          />
-        </Grid>
-        <Routes>
-          <Route path="/" element={<div>Welcome to the home page!</div>} />
-          <Route path="/my-progress" element={<div>My Progress Page</div>} />
-          <Route path="/my-profile" element={<div>My Profile Page</div>} />
-        </Routes>
-      </main>
-    </div>
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <DrawerHeader />
+        <Typography paragraph>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non
+          enim praesent elementum facilisis leo vel. Risus at ultrices mi tempus
+          imperdiet. Semper risus in hendrerit gravida rutrum quisque non tellus.
+          Convallis convallis tellus id interdum velit laoreet id donec ultrices.
+          Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
+          adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra
+          nibh cras. Metus vulputate eu scelerisque felis imperdiet proin fermentum
+          leo. Mauris commodo quis imperdiet massa tincidunt. Cras tincidunt lobortis
+          feugiat vivamus at augue. At augue eget arcu dictum varius duis at
+          consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa
+          sapien faucibus et molestie ac.
+        </Typography>
+        <Typography paragraph>
+          Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper
+          eget nulla facilisi etiam dignissim diam. Pulvinar elementum integer enim
+          neque volutpat ac tincidunt. Ornare suspendisse sed nisi lacus sed viverra
+          tellus. Purus sit amet volutpat consequat mauris. Elementum eu facilisis
+          sed odio morbi. Euismod lacinia at quis risus sed vulputate odio. Morbi
+          tincidunt ornare massa eget egestas purus viverra accumsan in. In hendrerit
+          gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem
+          et tortor. Habitant morbi tristique senectus et. Adipiscing elit duis
+          tristique sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
+          eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
+          posuere sollicitudin aliquam ultrices sagittis orci a.
+        </Typography>
+      </Box>
+    </Box>
   );
 }
-
-export default Home;
