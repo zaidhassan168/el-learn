@@ -16,31 +16,65 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Zoom from "@mui/material/Zoom";
 
-import { auth } from "./Firebase";
-// import { Login } from "@mui/icons-material";
+import { auth } from "../utils/Firebase";
+import firebase from "firebase/compat/app";
+import "firebase/compat/database";
 
-function LogIn() {
-  const [username, setUsername] = useState("");
+function Copyright(props) {
+  return (
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+      {...props}
+    >
+      {"Copyright © "}
+      <Link color="inherit" href="https://mui.com/">
+        Your Website
+      </Link>{" "}
+      {new Date().getFullYear()}
+      {"."}
+    </Typography>
+  );
+}
+
+const theme = createTheme();
+
+export default function SignUp() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [usernameError, setUsernameError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (username === "") {
-      setUsernameError("Please enter a username");
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError("Invalid email");
       return;
     }
+
+    // Check if password is valid
     if (password.length < 6) {
       setPasswordError("Password must be at least 6 characters");
       return;
     }
     auth
-      .signInWithEmailAndPassword(username, password)
+      .createUserWithEmailAndPassword(email, password)
       .then((userCredential) => {
+        // Signed in
         const user = userCredential.user;
+        firebase
+          .database()
+          .ref("users/" + user.uid)
+          .set({
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+          });
         console.log(user);
         localStorage.setItem("user", JSON.stringify(user));
         navigate("/home");
@@ -48,12 +82,14 @@ function LogIn() {
       .catch((error) => {
         console.log(error.code);
         switch (error.code) {
-          case "auth/user-not-found":
-            setUsernameError("Invalid email or password");
-            setPasswordError("Invalid email or password");
+          case "auth/email-already-in-use":
+            setEmailError("Email already in use");
             break;
-          case "auth/wrong-password":
-            setPasswordError("Invalid email or password");
+          case "auth/invalid-email":
+            setEmailError("Invalid email");
+            break;
+          case "auth/weak-password":
+            setPasswordError("Password too weak");
             break;
           default:
             console.log(error.code);
@@ -62,7 +98,7 @@ function LogIn() {
   };
 
   return (
-    <ThemeProvider theme={createTheme()}>
+    <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Zoom in={true} timeout={1000}>
@@ -78,7 +114,7 @@ function LogIn() {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Sign in
+              Sign up
             </Typography>
             <Box
               component="form"
@@ -87,19 +123,39 @@ function LogIn() {
               sx={{ mt: 3 }}
             >
               <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    autoComplete="given-name"
+                    name="firstName"
+                    required
+                    fullWidth
+                    id="firstName"
+                    label="First Name"
+                    autoFocus
+                    onChange={(event) => setFirstName(event.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    required
+                    fullWidth
+                    id="lastName"
+                    label="Last Name"
+                    name="lastName"
+                    autoComplete="family-name"
+                    onChange={(event) => setLastName(event.target.value)}
+                  />
+                </Grid>
                 <Grid item xs={12}>
                   <TextField
                     required
                     fullWidth
-                    id="username"
-                    label="Username"
-                    name="username"
-                    autoFocus
-                    onChange={(event) => setUsername(event.target.value)}
-                    {...(usernameError && {
-                      error: true,
-                      helperText: usernameError,
-                    })}
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    autoComplete="email"
+                    onChange={(event) => setEmail(event.target.value)}
+                    {...(emailError && { error: true, helperText: emailError })}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -110,7 +166,7 @@ function LogIn() {
                     label="Password"
                     type="password"
                     id="password"
-                    autoComplete="current-password"
+                    autoComplete="new-password"
                     onChange={(event) => setPassword(event.target.value)}
                     {...(passwordError && {
                       error: true,
@@ -120,8 +176,10 @@ function LogIn() {
                 </Grid>
                 <Grid item xs={12}>
                   <FormControlLabel
-                    control={<Checkbox value="remember" color="primary" />}
-                    label="Remember me"
+                    control={
+                      <Checkbox value="allowExtraEmails" color="primary" />
+                    }
+                    label="I want to receive inspiration, marketing promotions and updates via email."
                   />
                 </Grid>
               </Grid>
@@ -131,20 +189,20 @@ function LogIn() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                Sign In
+                Sign Up
               </Button>
               <Grid container justifyContent="flex-end">
                 <Grid item>
                   <Link href="#" variant="body2">
-                    Forgot password?
+                    Already have an account? Sign in
                   </Link>
                 </Grid>
               </Grid>
             </Box>
           </Box>
         </Zoom>
+        <Copyright sx={{ mt: 5 }} />
       </Container>
     </ThemeProvider>
   );
-};
-export default LogIn;
+}

@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { auth } from "../Firebase";
+import { auth } from "../utils/Firebase";
 const PrivateRoute = () => {
   const isAuthenticated = auth.currentUser;
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" /> ;

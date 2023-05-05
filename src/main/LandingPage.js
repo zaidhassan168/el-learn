@@ -2,7 +2,7 @@ import React from 'react';
 import Button from '@mui/material/Button';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import './LandingPage.css';
+import '../css/LandingPage.css';
 import { Link } from 'react-router-dom';
 import Zoom from "@mui/material/Zoom";
 
