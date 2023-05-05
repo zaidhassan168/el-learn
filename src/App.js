@@ -1,6 +1,7 @@
 import {Routes, Route } from 'react-router-dom';
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 // import { auth } from "./Firebase";
 import './App.css';
 import LandingPage from './LandingPage';
@@ -10,11 +11,11 @@ import LogIn from './LogIn';
 import Typography from '@mui/material/Typography';
 import { Zoom } from '@mui/material';
 import { auth } from './Firebase';
-import PrivateRoute from './utils/PrivateRoute';
+// import PrivateRoute from './utils/PrivateRoute';
 
 const App = () => {
   const navigate = useNavigate();
-  const currentUser = auth.currentUser;
+  const currentUser = localStorage.getItem("user");
   // useEffect(() => {
   //   const unsubscribe = auth.onAuthStateChanged((user) => {
   //     if (user) {
@@ -38,11 +39,9 @@ const App = () => {
         <main>
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route exact path='/' element={<PrivateRoute/>}>
-            <Route exact path='/home/*' element={<Home/>}/>
-            </Route>
             <Route path="/signup" element={<SignUp />} />
             {/* <Route path="/home" element={<Home />} /> */}
+            {currentUser ? ( <Route path="/home" element={<Home />} /> ) : ( <Route path="/home" element={<Navigate to="/login" />} /> )}
             <Route path="/login" element={<LogIn/>} />
           </Routes>
         </main>
