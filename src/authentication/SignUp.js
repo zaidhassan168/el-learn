@@ -19,6 +19,7 @@ import Zoom from "@mui/material/Zoom";
 import { auth } from "../utils/Firebase";
 import firebase from "firebase/compat/app";
 import "firebase/compat/database";
+import { updateProfile } from "@firebase/auth";
 
 function Copyright(props) {
   return (
@@ -65,8 +66,12 @@ export default function SignUp() {
     auth
       .createUserWithEmailAndPassword(email, password)
       .then((userCredential) => {
+
         // Signed in
         const user = userCredential.user;
+        updateProfile(user, {
+          displayName: firstName
+        })
         firebase
           .database()
           .ref("users/" + user.uid)

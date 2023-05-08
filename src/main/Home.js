@@ -21,6 +21,12 @@ import MailIcon from '@mui/icons-material/Mail';
 import { auth } from '../utils/Firebase';
 import { useNavigate } from "react-router-dom";
 import Button from '@mui/material/Button';
+import Avatar from '@mui/material/Avatar';
+import { deepOrange, deepPurple } from '@mui/material/colors';
+import { useState, useEffect } from "react";
+import firebase from "firebase/compat/app";
+import "firebase/compat/database";
+
 
 const drawerWidth = 240;
 
@@ -89,10 +95,35 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-export default function MiniDrawer() {
+export default function Home() {
   const theme = useTheme();
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
+  // const [currentUser, setCurrentUser] = useState(null);
+  // const [firstName, setFirstName] = useState("");
+  // const [lastName, setLastName] = useState("");
+  const [displayName, setDisplayName] = useState("");
+
+  useEffect(() => {
+    const user = firebase.auth().currentUser;
+    setDisplayName(user.displayName);
+    console.log(user);
+    // if (user) {
+    //   setCurrentUser(user);
+    //   const db = firebase.database();
+    //   const dbRef = db.ref("users/" + user.uid);
+    //   dbRef.get().then((snapshot) => {
+    //     if (snapshot.exists()) {
+    //       setFirstName(snapshot.val().firstName);
+    //       setLastName(snapshot.val().lastName);
+    //     } else {
+    //       console.log("No data available");
+    //     }
+    //   }).catch((error) => {
+    //     console.error(error);
+    //   });
+    // }
+  }, []);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -101,6 +132,7 @@ export default function MiniDrawer() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
 
   const handleLogout = () => {
     auth.signOut();
@@ -141,6 +173,13 @@ export default function MiniDrawer() {
             {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
         </DrawerHeader>
+        <Divider />
+        <ListItem sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Avatar sx={{ bgcolor: deepPurple[500] }}>AT</Avatar>
+      </ListItem>
+      <ListItem sx={{ display: 'flex', justifyContent: 'center' }}>
+        <ListItemText primary={displayName} />
+      </ListItem>
         <Divider />
         <List>
           {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
@@ -196,30 +235,11 @@ export default function MiniDrawer() {
         <DrawerHeader />
         <Typography paragraph>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non
-          enim praesent elementum facilisis leo vel. Risus at ultrices mi tempus
-          imperdiet. Semper risus in hendrerit gravida rutrum quisque non tellus.
-          Convallis convallis tellus id interdum velit laoreet id donec ultrices.
-          Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-          adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra
-          nibh cras. Metus vulputate eu scelerisque felis imperdiet proin fermentum
-          leo. Mauris commodo quis imperdiet massa tincidunt. Cras tincidunt lobortis
-          feugiat vivamus at augue. At augue eget arcu dictum varius duis at
-          consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa
-          sapien faucibus et molestie ac.
+
         </Typography>
         <Typography paragraph>
           Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper
-          eget nulla facilisi etiam dignissim diam. Pulvinar elementum integer enim
-          neque volutpat ac tincidunt. Ornare suspendisse sed nisi lacus sed viverra
-          tellus. Purus sit amet volutpat consequat mauris. Elementum eu facilisis
-          sed odio morbi. Euismod lacinia at quis risus sed vulputate odio. Morbi
-          tincidunt ornare massa eget egestas purus viverra accumsan in. In hendrerit
-          gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem
-          et tortor. Habitant morbi tristique senectus et. Adipiscing elit duis
-          tristique sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
-          eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
-          posuere sollicitudin aliquam ultrices sagittis orci a.
+
         </Typography>
       </Box>
     </Box>
