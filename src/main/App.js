@@ -1,4 +1,4 @@
-import {Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navigate } from "react-router-dom";
@@ -9,25 +9,25 @@ import Home from './Home';
 import LogIn from '../authentication/LogIn';
 import Typography from '@mui/material/Typography';
 import { Zoom } from '@mui/material';
-// import { auth } from './utils/Firebase';
-// import PrivateRoute from './utils/PrivateRoute';
 
 const App = () => {
   const navigate = useNavigate();
   const currentUser = localStorage.getItem("user");
   const location = useLocation();
-  // useEffect(() => {
-  //   const unsubscribe = auth.onAuthStateChanged((user) => {
-  //     if (user) {
-  //       navigate("/home");
-  //     }
-  //   });
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      navigate("/home");
+      if (location.pathname === "/signup" || location.pathname === "/login") {
+        navigate("/home");
+      }
+    } else {
+      if (location.pathname === "/home") {
+        navigate("/login");
+      }
     }
-  }, [navigate]);
+  }, [navigate, location.pathname]);
+
   return (
     // <Router>
       <div className="App">
@@ -42,7 +42,6 @@ const App = () => {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/signup" element={<SignUp />} />
-            {/* <Route path="/home" element={<Home />} /> */}
             {currentUser ? ( <Route path="/home" element={<Home />} /> ) : ( <Route path="/home" element={<Navigate to="/login" />} /> )}
             <Route path="/login" element={<LogIn/>} />
           </Routes>
