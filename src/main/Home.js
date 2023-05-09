@@ -17,7 +17,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
+// import MailIcon from "@mui/icons-material/Mail";
 import StarIcon from "@mui/icons-material/Star";
 import SendIcon from "@mui/icons-material/Send";
 import DraftsIcon from "@mui/icons-material/Drafts";
@@ -25,12 +25,12 @@ import { auth } from "../utils/Firebase";
 import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
-import { deepOrange, deepPurple } from "@mui/material/colors";
+import { deepPurple } from "@mui/material/colors";
 import { useState, useEffect } from "react";
 import WordCard from "../components/WordCard";
 import firebase from "firebase/compat/app";
 import "firebase/compat/database";
-import storeWords from "../utils/StoreWords";
+// import storeWords from "../utils/StoreWords";
 
 const drawerWidth = 240;
 
