@@ -1,22 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
+import { auth } from '../utils/Firebase';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-// import CardMedia from '@mui/material/CardMedia';
+import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function WordCard() {
   const theme = useTheme();
   const [word, setWord] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [response, setResponse] = useState(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const fetchWord = async () => {
@@ -28,58 +31,106 @@ export default function WordCard() {
     fetchWord();
   }, [currentIndex]);
 
-  const handleNextClick = () => {
+  useEffect(() => {
+    const handleFirstWord = async () => {
+      setCurrentIndex(0);
+      setLoaded(false);
+      await handleApiCall();
+    };
+
+    handleFirstWord();
+  }, []);
+
+  const handleNextClick = async () => {
+    setLoaded(false);
+    setWord(null);
     setCurrentIndex(currentIndex + 1);
+    setWord(await firebase.database().ref(`words/${currentIndex + 1}`).once('value').then(snapshot => snapshot.val()));
+  };
+
+  const handlePrevClick = async () => {
+    setLoaded(false);
+    setWord(null);
+    setCurrentIndex(currentIndex - 1);
+    setWord(await firebase.database().ref(`words/${currentIndex - 1}`).once('value').then(snapshot => snapshot.val()));
   };
 
   const handleApiCall = async () => {
     if (!word) return;
 
+    setResponse(null); // reset response to null before fetching new data
+
     const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
     const responseData = await response.json();
     setResponse(responseData);
+    setLoaded(true);
+
+    // Record the word in the user's history
+    const historyRef = firebase.database().ref("users/" + auth.currentUser.uid + "/history/" + word);
+    historyRef.set({
+      learned: true,
+      timestamp: Date.now(),
+    });
   };
 
-  if (!word) {
-    return null;
-  }
+  useEffect(() => {
+    handleApiCall();
+  }, [word]);
 
   return (
-    <Card>
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <CardContent sx={{ flex: '1 0 auto' }}>
-          <Typography component="div" variant="h5">
-            {word}
-          </Typography>
-          {response && response[0].phonetics.map((phonetic, index) => (
-            <div key={index}>
-              {phonetic.text && <Typography variant="subtitle1">{phonetic.text}</Typography>}
-              {phonetic.audio && <audio controls src={phonetic.audio} />}
-            </div>
-          ))}
-          {response && response[0].meanings.map((meaning, index) => (
-            <div key={index}>
-              <Typography variant="h6">{meaning.partOfSpeech}</Typography>
-              {meaning.definitions.map((definition, idx) => (
-                <Typography key={idx} variant="body1">
-                  {definition.definition}
-                </Typography>
-              ))}
-            </div>
-          ))}
-        </CardContent>
-        <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
-          <IconButton aria-label="previous" onClick={() => setCurrentIndex(currentIndex - 1)}>
-            {theme.direction === 'rtl' ? <SkipNextIcon /> : <SkipPreviousIcon />}
-          </IconButton>
-          <IconButton aria-label="play/pause" onClick={handleApiCall}>
-            <PlayArrowIcon sx={{ height: 38, width: 38 }} />
-          </IconButton>
-          <IconButton aria-label="next" onClick={handleNextClick}>
-            {theme.direction === 'rtl' ? <SkipPreviousIcon /> : <SkipNextIcon />}
-          </IconButton>
-        </Box>
-      </Box>
-    </Card>
+    <Box sx={{
+      flexGrow: 1,
+      position: 'relative',
+      zIndex: 0,
+    }}>
+      <Grid container spacing={2} justifyContent="center">
+        <Grid item xs={12} sm={8} md={6}>
+          <Card sx={{ height: '100%' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              <Box sx={{ flex: '1 0 auto', overflowY: 'auto', maxHeight: '400px' }}>
+                {!loaded && (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                    <CircularProgress />
+                  </Box>
+                )}
+                {loaded && (
+                  <CardContent sx={{ transition: 'transform 0.3s ease-in-out', transform: loaded ? 'scale(1)' : 'scale(0.8)' }}>
+                    <Typography component="div" variant="h5" align="center">
+                      {word}
+                    </Typography>
+                    {response && response[0].phonetics.map((phonetic, index) => (
+                      <div key={index}>
+                        {phonetic.text && <Typography variant="subtitle1" align="center">{phonetic.text}</Typography>}
+                        {phonetic.audio && <audio controls src={phonetic.audio} />}
+                      </div>
+                    ))}
+                    {response && response[0].meanings.map((meaning, index) => (
+                      <div key={index}>
+                        <Typography variant="h6" align="center">{meaning.partOfSpeech}</Typography>
+                        {meaning.definitions.map((definition, idx) => (
+                          <Typography key={idx} variant="body1" align="center">
+                            {definition.definition}
+                          </Typography>
+                        ))}
+                      </div>
+                    ))}
+                  </CardContent>
+                )}
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
+                <Button aria-label="previous" onClick={handlePrevClick} disabled={currentIndex === 0} sx={{ color: 'blue', position: 'absolute', bottom: 0, left: 0, textTransform: 'none' }}>
+                  <SkipPreviousIcon sx={{ mr: 1 }} />
+                  Previous Word
+                </Button>
+                <Button aria-label="next" onClick={handleNextClick} disabled={currentIndex === 999} sx={{ color: 'blue', position: 'absolute', bottom: 0, right: 0, textTransform: 'none' }}>
+                  Next Word
+                  <SkipNextIcon sx={{ ml: 1 }} />
+                </Button>
+              </Box>
+            </Box>
+          </Card>
+        </Grid>
+      </Grid>
+    </Box>
   );
 }
