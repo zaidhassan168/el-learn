@@ -30,6 +30,8 @@ import WordCard from "../components/WordCard";
 import Settings from "../components/Settings";
 import firebase from "firebase/compat/app";
 import "firebase/compat/database";
+import History from "../components/History";
+
 // import storeWords from "../utils/StoreWords";
 
 const drawerWidth = 240;
@@ -167,7 +169,7 @@ export default function Home() {
       case "history":
         return (
           <>
-            <Typography paragraph>Send email content...</Typography>
+            <History />
           </>
         );
       case "settings":
