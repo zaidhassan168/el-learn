@@ -1,25 +1,40 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/database';
 import { auth } from '../utils/Firebase';
-import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import CircularProgress from '@mui/material/CircularProgress';
 
 export default function WordCard() {
-  const theme = useTheme();
   const [word, setWord] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [response, setResponse] = useState(null);
   const [loaded, setLoaded] = useState(false);
+
+  const handleApiCall = useCallback(async () => {
+    if (!word) return;
+
+    setResponse(null); // reset response to null before fetching new data
+
+    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+    const responseData = await response.json();
+    setResponse(responseData);
+    setLoaded(true);
+
+    // Record the word in the user's history
+    const historyRef = firebase.database().ref("users/" + auth.currentUser.uid + "/history/" + word);
+    historyRef.set({
+      learned: true,
+      timestamp: Date.now(),
+    });
+  }, [word]);
 
   useEffect(() => {
     const fetchWord = async () => {
@@ -39,7 +54,7 @@ export default function WordCard() {
     };
 
     handleFirstWord();
-  }, []);
+  }, [handleApiCall]);
 
   const handleNextClick = async () => {
     setLoaded(false);
@@ -55,27 +70,9 @@ export default function WordCard() {
     setWord(await firebase.database().ref(`words/${currentIndex - 1}`).once('value').then(snapshot => snapshot.val()));
   };
 
-  const handleApiCall = async () => {
-    if (!word) return;
-
-    setResponse(null); // reset response to null before fetching new data
-
-    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-    const responseData = await response.json();
-    setResponse(responseData);
-    setLoaded(true);
-
-    // Record the word in the user's history
-    const historyRef = firebase.database().ref("users/" + auth.currentUser.uid + "/history/" + word);
-    historyRef.set({
-      learned: true,
-      timestamp: Date.now(),
-    });
-  };
-
   useEffect(() => {
     handleApiCall();
-  }, [word]);
+  }, [word, handleApiCall]);
 
   return (
     <Box sx={{
