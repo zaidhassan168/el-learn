@@ -85,6 +85,7 @@ export default function Settings() {
                 value={firstName}
                 required
                 onChange={(e) => setFirstName(e.target.value)}
+                sx={{ mb: 2 }}
               />
               <TextField
                 id="lastName"
@@ -93,6 +94,7 @@ export default function Settings() {
                 value={lastName}
                 required
                 onChange={(e) => setLastName(e.target.value)}
+                sx={{ mb: 2 }}
               />
               <TextField
                 id="displayName"
@@ -101,6 +103,7 @@ export default function Settings() {
                 value={displayName}
                 required
                 onChange={(e) => setDisplayName(e.target.value)}
+                sx={{ mb: 2 }}
               />
               <Button
                 className="settings-button"
@@ -129,6 +132,7 @@ export default function Settings() {
                 value={password}
                 required
                 onChange={(e) => setPassword(e.target.value)}
+                sx={{ mb: 2 }}
               />
               <Button
                 className="settings-button"
