@@ -209,7 +209,7 @@ const AppBar = styled(MuiAppBar, {
               </Button>
             </Toolbar>
           </AppBar>
-          <Drawer variant="permanent" open={open} onMouseLeave={handleDrawerClose}>
+          <Drawer variant="permanent" open={open} onMouseLeave={handleDrawerClose} onMouseOver={handleDrawerOpen}>
             <DrawerHeader>
               <IconButton onClick={handleDrawerClose}>
                 {theme.direction === "rtl" ? (
