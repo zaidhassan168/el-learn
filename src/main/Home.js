@@ -16,10 +16,10 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import RestoreRoundedIcon from '@mui/icons-material/RestoreRounded';
-import LocalLibraryRoundedIcon from '@mui/icons-material/LocalLibraryRounded';
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import AppSettingsAltRoundedIcon from '@mui/icons-material/AppSettingsAltRounded';
+import RestoreRoundedIcon from "@mui/icons-material/RestoreRounded";
+import LocalLibraryRoundedIcon from "@mui/icons-material/LocalLibraryRounded";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import AppSettingsAltRoundedIcon from "@mui/icons-material/AppSettingsAltRounded";
 import { auth } from "../utils/Firebase";
 import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
@@ -78,198 +78,193 @@ const AppBar = styled(MuiAppBar, {
   ...(open && {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(["width", "margin"], {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.enteringScreen,
-        }),
-      }),
-    }));
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
 
-    const Drawer = styled(MuiDrawer, {
-      shouldForwardProp: (prop) => prop !== "open",
-    })(({ theme, open }) => ({
-      width: drawerWidth,
-      flexShrink: 0,
-      whiteSpace: "nowrap",
-      boxSizing: "border-box",
-      ...(open && {
-        ...openedMixin(theme),
-        "& .MuiDrawer-paper": openedMixin(theme),
-      }),
-      ...(!open && {
-        ...closedMixin(theme),
-        "& .MuiDrawer-paper": closedMixin(theme),
-      }),
-    }));
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  width: drawerWidth,
+  flexShrink: 0,
+  whiteSpace: "nowrap",
+  boxSizing: "border-box",
+  ...(open && {
+    ...openedMixin(theme),
+    "& .MuiDrawer-paper": openedMixin(theme),
+  }),
+  ...(!open && {
+    ...closedMixin(theme),
+    "& .MuiDrawer-paper": closedMixin(theme),
+  }),
+}));
 
-    export default function Home() {
-      const theme = useTheme();
-      const navigate = useNavigate();
-      const [open, setOpen] = React.useState(false);
-      const [selectedItem, setSelectedItem] = useState("inbox");
-      // const [currentUser, setCurrentUser] = useState(null);
-      // const [firstName, setFirstName] = useState("");
-      // const [lastName, setLastName] = useState("");
-      const [displayName, setDisplayName] = useState("");
+export default function Home() {
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const [open, setOpen] = React.useState(false);
+  const [selectedItem, setSelectedItem] = useState("home"); // set initial value to "home"
+  const [displayName, setDisplayName] = useState("");
 
-      useEffect(() => {
+  useEffect(() => {
+    const user = firebase.auth().currentUser;
+    if (user && user.displayName) {
+      setDisplayName(user.displayName);
+    }
+    console.log(user);
+  }, []);
 
-        const user = firebase.auth().currentUser;
-        if (user && user.displayName) {
-          setDisplayName(user.displayName);
-        }
-        console.log(user);
-        // if (user) {
-        //   setCurrentUser(user);
-        //   const db = firebase.database();
-        //   const dbRef = db.ref("users/" + user.uid);
-        //   dbRef.get().then((snapshot) => {
-        //     if (snapshot.exists()) {
-        //       setFirstName(snapshot.val().firstName);
-        //       setLastName(snapshot.val().lastName);
-        //     } else {
-        //       console.log("No data available");
-        //     }
-        //   }).catch((error) => {
-        //     console.error(error);
-        //   });
-        // }
-      }, []);
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
 
-      const handleDrawerOpen = () => {
-        setOpen(true);
-      };
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
 
-      const handleDrawerClose = () => {
-        setOpen(false);
-      };
+  const handleLogout = () => {
+    auth.signOut();
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
 
-      const handleLogout = () => {
-        auth.signOut();
-        localStorage.removeItem("user");
-        navigate("/login");
-      };
+  const handleItemClick = (item) => {
+    setSelectedItem(item);
+  };
 
-      const handleItemClick = (item) => {
-        setSelectedItem(item);
-      };
-      const renderContent = () => {
-        switch (selectedItem) {
-          case "home":
-            return (
-              <>
-               <HomeDetails/>
-              </>
-            );
-          case "learn":
-            return (
-              <>
-                <WordCard />
-              </>
-            );
-          case "history":
-            return (
-              <>
-                <History />
-              </>
-            );
-          case "settings":
-            return (
-              <>
-                <Settings />
-              </>
-            );
-          default:
-            return null;
-        }
-      };
+  const renderContent = () => {
+    switch (selectedItem) {
+      case "home":
+        return (
+          <>
+            <HomeDetails />
+          </>
+        );
+      case "learn":
+        return (
+          <>
+            <WordCard />
+          </>
+        );
+      case "history":
+        return (
+          <>
+            <History />
+          </>
+        );
+      case "settings":
+        return (
+          <>
+            <Settings />
+          </>
+        );
+      default:
+        return null;
+    }
+  };
 
-      return (
-        <Box sx={{ display: "flex" }}>
-          <CssBaseline />
-          <AppBar position="fixed" open={open}>
-            <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onMouseEnter={handleDrawerOpen}
-                edge="start"
+  return (
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <AppBar position="fixed" open={open}>
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onMouseEnter={handleDrawerOpen}
+            edge="start"
+            sx={{
+              marginRight: 5,
+              ...(open && { display: "none" }),
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap component="div">
+            El-Learn
+          </Typography>
+          <Button color="inherit" onClick={handleLogout}>
+            Logout
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        variant="permanent"
+        open={open}
+        onMouseLeave={handleDrawerClose}
+        onMouseOver={handleDrawerOpen}
+      >
+        <DrawerHeader>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === "rtl" ? (
+              <ChevronRightIcon />
+            ) : (
+              <ChevronLeftIcon />
+            )}
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        <ListItem sx={{ display: "flex", justifyContent: "center" }}>
+          <Avatar sx={{ bgcolor: deepPurple[500] }}>AT</Avatar>
+        </ListItem>
+        <ListItem sx={{ display: "flex", justifyContent: "center" }}>
+          <ListItemText primary={displayName} />
+        </ListItem>
+        <Divider />
+        <List>
+          {[
+            { label: "Home", icon: <HomeRoundedIcon />, item: "home" },
+            {
+              label: "Learn",
+              icon: <LocalLibraryRoundedIcon />,
+              item: "learn",
+            },
+            { label: "History", icon: <RestoreRoundedIcon />, item: "history" },
+            {
+              label: "Settings",
+              icon: <AppSettingsAltRoundedIcon />,
+              item: "settings",
+            },
+          ].map((item) => (
+            <ListItem
+              key={item.item}
+              disablePadding
+              sx={{ display: "block" }}
+              onClick={() => handleItemClick(item.item)}
+            >
+              <ListItemButton
                 sx={{
-                  marginRight: 5,
-                  ...(open && { display: "none" }),
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
                 }}
               >
-                <MenuIcon />
-              </IconButton>
-              <Typography variant="h6" noWrap component="div">
-                El-Learn
-              </Typography>
-              <Button color="inherit" onClick={handleLogout}>
-                Logout
-              </Button>
-            </Toolbar>
-          </AppBar>
-          <Drawer variant="permanent" open={open} onMouseLeave={handleDrawerClose} onMouseOver={handleDrawerOpen}>
-            <DrawerHeader>
-              <IconButton onClick={handleDrawerClose}>
-                {theme.direction === "rtl" ? (
-                  <ChevronRightIcon />
-                ) : (
-                  <ChevronLeftIcon />
-                )}
-              </IconButton>
-            </DrawerHeader>
-            <Divider />
-            <ListItem sx={{ display: "flex", justifyContent: "center" }}>
-              <Avatar sx={{ bgcolor: deepPurple[500] }}>AT</Avatar>
-            </ListItem>
-            <ListItem sx={{ display: "flex", justifyContent: "center" }}>
-              <ListItemText primary={displayName} />
-            </ListItem>
-            <Divider />
-            <List>
-              {[
-                { label: "Home", icon: <HomeRoundedIcon />, item: "home" },
-                { label: "Learn", icon: <LocalLibraryRoundedIcon />, item: "learn" },
-                { label: "History", icon: <RestoreRoundedIcon />, item: "history" },
-                { label: "Settings", icon: <AppSettingsAltRoundedIcon />, item: "settings" },
-              ].map((item) => (
-                <ListItem
-                  key={item.item}
-                  disablePadding
-                  sx={{ display: "block" }}
-                  onClick={() => handleItemClick(item.item)}
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
                 >
-                  <ListItemButton
-                    sx={{
-                      minHeight: 48,
-                      justifyContent: open ? "initial" : "center",
-                      px: 2.5,
-                    }}
-                  >
-                    <ListItemIcon
-                      sx={{
-                        minWidth: 0,
-                        mr: open ? 3 : "auto",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {item.icon}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={item.label}
-                      sx={{ opacity: open ? 1 : 0 }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-            <Divider />
-          </Drawer>
-          <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-            <DrawerHeader />
-            {renderContent()}
-          </Box>
-        </Box>
-      );
-    }
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.label}
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+      </Drawer>
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <DrawerHeader />
+        {renderContent()}
+      </Box>
+    </Box>
+  );
+}

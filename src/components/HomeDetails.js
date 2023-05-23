@@ -1,52 +1,86 @@
 import React, { useState, useEffect } from "react";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 import { auth } from "../utils/Firebase";
 import firebase from "firebase/compat/app";
-import Typography from "@mui/material/Typography";
-// import '../css/home.css'
+import CircularProgress from "@mui/material/CircularProgress";
+import WordCard from "./WordCard";
 
 export default function HomeDetails() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [languages, setLanguages] = useState([]);
-  const [wordsLearned, setWordsLearned] = useState(0);
+  const [wordCount, setWordCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [learningStarted, setLearningStarted] = useState(false);
 
   useEffect(() => {
-    if (auth.currentUser) {
-      firebase.database().ref("users/" + auth.currentUser.uid).on("value", (snapshot) => {
-        setFirstName(snapshot.val().firstName);
-        setLastName(snapshot.val().lastName);
-        setWordsLearned(snapshot.val().wordsLearned);
-      });
-    }
+    const fetchData = async () => {
+      try {
+        const snapshot = await firebase
+          .database()
+          .ref(`users/${auth.currentUser.uid}/history`)
+          .once("value");
+        const words = snapshot.val();
+        if (words) {
+          const count = Object.keys(words).length;
+          setWordCount(count);
+        }
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        setError("Failed to fetch data.");
+      }
+    };
+
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    firebase.database().ref("languages").on("value", (snapshot) => {
-      const languages = [];
-      snapshot.forEach((childSnapshot) => {
-        languages.push(childSnapshot.val());
-      });
-      setLanguages(languages);
-    });
-  }, []);
+  const handleStartLearning = () => {
+    setLearningStarted(true);
+  };
 
   return (
-    <div className="home-details-container">
-      <Typography variant="h4" component="h2" className="home-details-title">
-        Welcome, {firstName} {lastName}!
-      </Typography>
-      <Typography variant="h6" component="h3" className="home-details-subtitle">
-        Languages Offered:
-      </Typography>
-      <ul>
-        {languages.map((language, index) => (
-          <li key={index}>{language}</li>
-        ))}
-      </ul>
-      <Typography variant="h6" component="h3" className="home-details-subtitle">
-        Words Learned: {wordsLearned}
-
-      </Typography>
-    </div>
+    <Box className="home-container">
+      <Grid container spacing={2} justifyContent="center">
+        <Grid item xs={12} md={6}>
+          {learningStarted ? (
+            <WordCard />
+          ) : (
+            <Paper className="home-paper">
+              <Typography variant="h4" component="h2" className="section-title">
+                Welcome, {auth.currentUser.displayName}!
+              </Typography>
+              <Typography variant="h6" component="p" className="word-count">
+                You have learned {wordCount} words.
+              </Typography>
+              {loading ? (
+                <Box className="loader-container">
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <>
+                  {error && (
+                    <Typography color="error" className="error-message">
+                      {error}
+                    </Typography>
+                  )}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    onClick={handleStartLearning}
+                    className="start-learning-button"
+                  >
+                    Start Learning
+                  </Button>
+                </>
+              )}
+            </Paper>
+          )}
+        </Grid>
+      </Grid>
+    </Box>
   );
 }
