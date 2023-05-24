@@ -12,24 +12,11 @@ import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 import CircularProgress from "@mui/material/CircularProgress";
 
-const ChapterList = ({ chapters, onSelectChapter }) => (
-  <Box sx={{ width: "200px", height: "100%", overflowY: "auto" }}>
-    <ul>
-      {chapters.map((chapter, index) => (
-        <li key={index} onClick={() => onSelectChapter(index)}>
-          {chapter.title}
-        </li>
-      ))}
-    </ul>
-  </Box>
-);
-
 export default function WordCard() {
   const [word, setWord] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [response, setResponse] = useState(null);
   const [loaded, setLoaded] = useState(false);
-  const [chapters, setChapters] = useState([]);
 
   const handleApiCall = useCallback(async () => {
     if (!word) return;
@@ -78,23 +65,9 @@ export default function WordCard() {
     setCurrentIndex(currentIndex - 1);
   };
 
-  const handleChapterSelect = (chapterIndex) => {
-    setCurrentIndex(chapterIndex);
-  };
-
   useEffect(() => {
     handleApiCall();
   }, [word, handleApiCall]);
-
-  useEffect(() => {
-    const fetchChapters = async () => {
-      const snapshot = await firebase.database().ref("chapters").once("value");
-      const chaptersData = snapshot.val();
-      setChapters(chaptersData);
-    };
-
-    fetchChapters();
-  }, []);
 
   return (
     <Box
@@ -103,7 +76,6 @@ export default function WordCard() {
         height: "100vh",
       }}
     >
-      <ChapterList chapters={chapters} onSelectChapter={handleChapterSelect} />
       <Box
         sx={{
           flexGrow: 1,
@@ -141,7 +113,7 @@ export default function WordCard() {
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
-                        height: "100%",
+                        height: "400px",
                       }}
                     >
                       <CircularProgress />
@@ -223,7 +195,13 @@ export default function WordCard() {
                   )}
                 </Box>
                 <Box
-                  sx={{ display: "flex", alignItems: "center", pl: 1, pb: 1 }}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    pl: 1,
+                    pb: 1,
+                  }}
                 >
                   <Button
                     aria-label="previous"
@@ -231,9 +209,6 @@ export default function WordCard() {
                     disabled={currentIndex === 0}
                     sx={{
                       color: "blue",
-                      position: "absolute",
-                      bottom: 0,
-                      left: 0,
                       textTransform: "none",
                     }}
                   >
@@ -246,9 +221,6 @@ export default function WordCard() {
                     disabled={currentIndex === 999}
                     sx={{
                       color: "blue",
-                      position: "absolute",
-                      bottom: 0,
-                      right: 0,
                       textTransform: "none",
                     }}
                   >

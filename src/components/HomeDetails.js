@@ -8,24 +8,28 @@ import { auth } from "../utils/Firebase";
 import firebase from "firebase/compat/app";
 import CircularProgress from "@mui/material/CircularProgress";
 import WordCard from "./WordCard";
+import "../css/HomeDetailsStyles.css"
 
-export default function HomeDetails() {
+const HomeDetails = () => {
   const [wordCount, setWordCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [learningStarted, setLearningStarted] = useState(false);
+  const currentUser = auth.currentUser;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const snapshot = await firebase
-          .database()
-          .ref(`users/${auth.currentUser.uid}/history`)
-          .once("value");
-        const words = snapshot.val();
-        if (words) {
-          const count = Object.keys(words).length;
-          setWordCount(count);
+        if (currentUser) {
+          const snapshot = await firebase
+            .database()
+            .ref(`users/${currentUser.uid}/history`)
+            .once("value");
+          const words = snapshot.val();
+          if (words) {
+            const count = Object.keys(words).length;
+            setWordCount(count);
+          }
         }
         setLoading(false);
       } catch (error) {
@@ -35,10 +39,12 @@ export default function HomeDetails() {
     };
 
     fetchData();
-  }, []);
+  }, [currentUser]);
 
   const handleStartLearning = () => {
     setLearningStarted(true);
+    // Navigate to WordCard component
+    // You can use your preferred method of navigation here
   };
 
   return (
@@ -46,11 +52,13 @@ export default function HomeDetails() {
       <Grid container spacing={2} justifyContent="center">
         <Grid item xs={12} md={6}>
           {learningStarted ? (
-            <WordCard />
+            <Paper className="home-paper">
+              <WordCard />
+            </Paper>
           ) : (
             <Paper className="home-paper">
               <Typography variant="h4" component="h2" className="section-title">
-                Welcome, {auth.currentUser.displayName}!
+                Welcome, {currentUser && currentUser.displayName}!
               </Typography>
               <Typography variant="h6" component="p" className="word-count">
                 You have learned {wordCount} words.
@@ -83,4 +91,6 @@ export default function HomeDetails() {
       </Grid>
     </Box>
   );
-}
+};
+
+export default HomeDetails;
