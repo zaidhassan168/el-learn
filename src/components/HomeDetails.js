@@ -9,6 +9,7 @@ import firebase from "firebase/compat/app";
 import CircularProgress from "@mui/material/CircularProgress";
 import WordCard from "./WordCard";
 import "../css/HomeDetailsStyles.css"
+// import { addWordsToChapters } from "../utils/StoreWords";
 
 const HomeDetails = () => {
   const [wordCount, setWordCount] = useState(0);
@@ -16,7 +17,6 @@ const HomeDetails = () => {
   const [error, setError] = useState("");
   const [learningStarted, setLearningStarted] = useState(false);
   const currentUser = auth.currentUser;
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -79,6 +79,7 @@ const HomeDetails = () => {
                     color="primary"
                     size="large"
                     onClick={handleStartLearning}
+                    // onClick={() => addWordsToChapters(basicWords)}
                     className="start-learning-button"
                   >
                     Start Learning

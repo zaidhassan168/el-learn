@@ -16,10 +16,13 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import ImportContactsRoundedIcon from '@mui/icons-material/ImportContactsRounded';
 import RestoreRoundedIcon from "@mui/icons-material/RestoreRounded";
 import LocalLibraryRoundedIcon from "@mui/icons-material/LocalLibraryRounded";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import AppSettingsAltRoundedIcon from "@mui/icons-material/AppSettingsAltRounded";
+import Icon from '@mui/material/Icon';
+
 import { auth } from "../utils/Firebase";
 import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
@@ -32,6 +35,7 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/database";
 import History from "../components/History";
 import HomeDetails from "../components/HomeDetails";
+import ChaptersList from "../components/ChaptersList";
 
 // import storeWords from "../utils/StoreWords";
 
@@ -161,6 +165,12 @@ export default function Home() {
             <Settings />
           </>
         );
+        case "chaptersList":
+          return (
+            <>
+              <ChaptersList />
+            </>
+          );
       default:
         return null;
     }
@@ -222,10 +232,16 @@ export default function Home() {
               icon: <LocalLibraryRoundedIcon />,
               item: "learn",
             },
+            {
+              label: "Chapters",
+              icon: <ImportContactsRoundedIcon/>,
+              item: "chaptersList",
+            },
             { label: "History", icon: <RestoreRoundedIcon />, item: "history" },
             {
               label: "Settings",
-              icon: <AppSettingsAltRoundedIcon />,
+              icon: <AppSettingsAltRoundedIcon color="blue">
+                </AppSettingsAltRoundedIcon>,
               item: "settings",
             },
           ].map((item) => (
