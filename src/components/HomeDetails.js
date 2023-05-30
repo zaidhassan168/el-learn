@@ -25,9 +25,10 @@ import ListItemText from "@mui/material/ListItemText";
 const HomeContainer = styled(Box)({
   backgroundImage: `url(${Image})`,
   backgroundSize: "cover",
-  minHeight: "100vh",
+  minHeight: "120vh",
+  backgroundAttachment: "fixed",
+  backgroundPosition: "center bottom", // Adjust the background position
 });
-
 const HomeDetailsContainer = styled(Grid)(({ theme }) => ({
   height: "100%",
   padding: theme.spacing(4),
