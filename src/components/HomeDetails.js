@@ -62,7 +62,7 @@ const HomeDetails = () => {
   const [showWordList, setShowWordList] = useState(false);
   const [showWordDialog, setShowWordDialog] = useState(false);
   const [dialogWordIndex, setDialogWordIndex] = useState(0);
-
+  const [apiResponse, setApiResponse] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -129,29 +129,30 @@ const HomeDetails = () => {
     setShowWordDialog(true);
     setDialogWordIndex(selectedChapter.words.indexOf(word));
 
-    const url = 'https://microsoft-translator-text.p.rapidapi.com/Dictionary/Examples?to=es&from=en&api-version=3.0';
-const options = {
-	method: 'POST',
-	headers: {
-		'content-type': 'application/json',
-		'X-RapidAPI-Key': '5b0660e3ccmsh44e5c1389cde10fp1e1b42jsn2d96ee274fca',
-		'X-RapidAPI-Host': 'microsoft-translator-text.p.rapidapi.com'
-	},
-	body: [
-		{
-			Text: 'fly',
-			Translation: 'volar'
-		}
-	]
-};
+    const url =
+      "https://api.cognitive.microsofttranslator.com/dictionary/lookup?api-version=3.0&from=en&to=es";
+    const options = {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "X-RapidAPI-Key": "5b0660e3ccmsh44e5c1389cde10fp1e1b42jsn2d96ee274fca",
+        "X-RapidAPI-Host": "microsoft-translator-text.p.rapidapi.com",
+      },
+      body: [
+        {
+          Text: "fly",
+          Translation: "volar",
+        },
+      ],
+    };
 
-try {
-	const response = await fetch(url, options);
-	const result = await response.text();
-	console.log(result);
-} catch (error) {
-	console.error(error);
-}
+    try {
+      const response = await fetch(url, options);
+      const result = await response.text();
+      console.log(result);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleNextWord = async () => {
@@ -160,9 +161,9 @@ try {
       setDialogWordIndex(nextIndex);
       const nextWord = selectedChapter.words[nextIndex];
       try {
-        const response = await callDictionaryAPI(nextWord);
-        const result = await response.text();
-        console.log(result);
+        const result = await callDictionaryAPI(nextWord);
+        console.log(result[0].translations);
+        setApiResponse(result);
         // Update the response state variable for the next word
         // Example: setApiResponse(result);
       } catch (error) {
@@ -177,11 +178,11 @@ try {
       setDialogWordIndex(previousIndex);
       const previousWord = selectedChapter.words[previousIndex];
       try {
-        const response = await callDictionaryAPI(previousWord);
-        const result = await response.text();
+        const result = await callDictionaryAPI(previousWord);
         console.log(result);
-        // Update the response state variable for the previous word
-        // Example: setApiResponse(result);
+        // show output in log by converting to json
+        // console.log(result[0]);
+        // console.log(apiResponse);
       } catch (error) {
         console.error(error);
       }
@@ -189,19 +190,37 @@ try {
   };
 
   const callDictionaryAPI = async (word) => {
-    const url =
-      "https://microsoft-translator-text.p.rapidapi.com/Dictionary/Lookup?to=es&api-version=3.0&from=en";
+    // const { v4: uuidv4 } = require("uuid");
+
+    let key = "fd71f14f5fb047ee998a71b51665aea3";
+    let endpoint = "https://api.cognitive.microsofttranslator.com";
+    let location = "eastus";
+
+    const url = `${endpoint}/dictionary/lookup?api-version=3.0&from=en&to=ar`;
+
     const options = {
       method: "POST",
       headers: {
-        "content-type": "application/json",
-        "X-RapidAPI-Key": "5b0660e3ccmsh44e5c1389cde10fp1e1b42jsn2d96ee274fca",
-        "X-RapidAPI-Host": "microsoft-translator-text.p.rapidapi.com",
+        "Ocp-Apim-Subscription-Key": key,
+        "Ocp-Apim-Subscription-Region": location,
+        "Content-Type": "application/json",
       },
-      body: [{ Text: word }],
+      body: JSON.stringify([
+        {
+          text: word,
+        },
+      ]),
     };
 
-    return fetch(url, options);
+    try {
+      const response = await fetch(url, options);
+      const data = await response.json();
+      // console.log(data);
+      setApiResponse(data);
+      return data;
+    } catch (error) {
+      throw new Error(error);
+    }
   };
 
   const handleCloseDialog = () => {
@@ -346,32 +365,73 @@ try {
 
       {/* Word Dialog */}
       <Dialog
-        open={showWordDialog}
-        onClose={handleCloseDialog}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Word Details</DialogTitle>
-        <DialogContent>
-          {/* Render word details here */}
-          {selectedChapter && selectedChapter.words[dialogWordIndex]}
-        </DialogContent>
-        <DialogActions>
-          <IconButton
-            color="primary"
-            onClick={handlePreviousWord}
-            disabled={dialogWordIndex === 0}
-          >
-            <ChevronLeftIcon />
-          </IconButton>
-          <IconButton color="primary" onClick={handleNextWord}>
-            <ChevronRightIcon />
-          </IconButton>
-          <IconButton color="primary" onClick={handleCloseDialog}>
-            <CloseIcon />
-          </IconButton>
-        </DialogActions>
-      </Dialog>
+  open={showWordDialog}
+  onClose={handleCloseDialog}
+  maxWidth="sm"
+  fullWidth
+>
+  <DialogTitle>Word Details</DialogTitle>
+  <DialogContent>
+    {/* Render word details here */}
+    {selectedChapter && selectedChapter.words[dialogWordIndex]}
+
+    {/* Render translations */}
+    {apiResponse && apiResponse.length > 0 && (
+      <div>
+        <h3>Translations:</h3>
+        {apiResponse[0].translations.map((translation) => (
+          <div key={translation.normalizedTarget}>
+            <p>
+              <strong>Source:</strong> {apiResponse[0].displaySource}
+            </p>
+            <p>
+              <strong>Target:</strong> {translation.displayTarget}
+            </p>
+            <p>
+              <strong>Part of Speech:</strong> {translation.posTag}
+            </p>
+            <p>
+              <strong>Confidence:</strong> {translation.confidence}
+            </p>
+            <p>
+              <strong>Back Translations:</strong>
+            </p>
+            <ul>
+              {translation.backTranslations.map((backTranslation) => (
+                <li key={backTranslation.normalizedText}>
+                  <p>
+                    <strong>Text:</strong> {backTranslation.displayText}
+                  </p>
+                  <p>
+                    <strong>Frequency Count:</strong>{' '}
+                    {backTranslation.frequencyCount}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    )}
+  </DialogContent>
+  <DialogActions>
+    <IconButton
+      color="primary"
+      onClick={handlePreviousWord}
+      disabled={dialogWordIndex === 0}
+    >
+      <ChevronLeftIcon />
+    </IconButton>
+    <IconButton color="primary" onClick={handleNextWord}>
+      <ChevronRightIcon />
+    </IconButton>
+    <IconButton color="primary" onClick={handleCloseDialog}>
+      <CloseIcon />
+    </IconButton>
+  </DialogActions>
+</Dialog>
+
+
     </HomeContainer>
   );
 };
