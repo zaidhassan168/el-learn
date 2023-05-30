@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 import CircularProgress from "@mui/material/CircularProgress";
+import Image from "..//assets/pexels.jpg";
 
 export default function WordCard() {
   const [word, setWord] = useState(null);
@@ -71,10 +72,19 @@ export default function WordCard() {
 
   return (
     <Box
-      sx={{
-        display: "flex",
-        height: "100vh",
-      }}
+    sx={{
+      display: 'flex',
+      flexWrap: 'wrap',
+      backgroundColor: '#f5f5f5',
+      padding: '20px',
+      borderRadius: '10px',
+      backgroundImage: `url(${Image})`,
+      backgroundSize: 'cover',
+      minHeight: '120vh',
+      backgroundPosition: "center bottom", // Adjust the background position
+      backgroundAttachment: "fixed", // Fix the background image so that it doesn't scroll
+
+    }}
     >
       <Box
         sx={{

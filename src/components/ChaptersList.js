@@ -15,6 +15,7 @@ import Slide from '@mui/material/Slide';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import Image from '..//assets/pexels.jpg';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -78,16 +79,29 @@ const ChaptersList = () => {
     setSelectedChapter(null);
     setOpenDialog(false);
   };
-
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        backgroundColor: '#f5f5f5',
+        padding: '20px',
+        borderRadius: '10px',
+        backgroundImage: `url(${Image})`,
+        backgroundSize: 'cover',
+        minHeight: '120vh',
+        backgroundPosition: "center bottom", // Adjust the background position
+        backgroundAttachment: "fixed", // Fix the background image so that it doesn't scroll
+
+      }}
+    >
       {chapters.map((chapter) => (
         <Card
           key={chapter.id}
           sx={{
             width: '200px',
             margin: '10px',
-            backgroundColor: selectedChapter?.id === chapter.id ? 'lightgreen' : 'lightblue',
+            backgroundColor: 'rgba(255, 255, 255, 0.8)', // Transparent background
             cursor: 'pointer',
             animation: selectedChapter?.id === chapter.id ? 'shake 0.5s ease-in-out' : 'none',
             animationIterationCount: selectedChapter?.id === chapter.id ? 'infinite' : '1',
