@@ -7,7 +7,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import { styled } from "@mui/material/styles";
 import Image from "../assets/pexels.jpg";
-import WordCard from "./WordCard";
+// import WordCard from "./WordCard";
 import { auth } from "../utils/Firebase";
 import firebase from "firebase/compat/app";
 import Fade from "@mui/material/Fade";
@@ -55,7 +55,7 @@ const HomeDetails = () => {
   const [wordCount, setWordCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [learningStarted, setLearningStarted] = useState(false);
+  // const [learningStarted, setLearningStarted] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [selectedWord, setSelectedWord] = useState(null);
@@ -294,11 +294,11 @@ const HomeDetails = () => {
     setShowWordDialog(false);
   };
 
-  const handleStartLearning = () => {
-    setLearningStarted(true);
-    // Navigate to WordCard component
-    // You can use your preferred method of navigation here
-  };
+  // const handleStartLearning = () => {
+  //   setLearningStarted(true);
+  //   // Navigate to WordCard component
+  //   // You can use your preferred method of navigation here
+  // };
 
   return (
     <HomeContainer>
@@ -307,111 +307,147 @@ const HomeDetails = () => {
         justifyContent="center"
         alignItems="center"
       >
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={10}>
           <HomeDetailsPaper>
-            {learningStarted ? (
-              <WordCard />
-            ) : (
-              <>
-                <Typography variant="h4" component="h2">
-                  Welcome, {auth.currentUser && auth.currentUser.displayName}!
-                </Typography>
-                <Typography variant="h6" component="p" sx={{ mt: 2 }}>
-                  You have learned {wordCount} words.
-                </Typography>
-                {loading ? (
-                  <Box sx={{ mt: 4 }}>
-                    <CircularProgress />
-                  </Box>
-                ) : (
-                  <>
-                    {error && (
-                      <Typography color="error" sx={{ mt: 4 }}>
-                        {error}
-                      </Typography>
-                    )}
-                    {!showWordList ? (
-                      // Chapter list section
-                      <Fade in={!showWordList}>
-                        <Box sx={{ mt: 4 }}>
-                          <Typography variant="h6" component="p" sx={{ mt: 4 }}>
-                            Select a chapter:
-                          </Typography>
-                          <Box
+            <>
+              <Typography variant="h4" component="h2">
+                Welcome, {auth.currentUser && auth.currentUser.displayName}!
+              </Typography>
+              <Typography variant="h6" component="p" sx={{ mt: 2 }}>
+                You have learned {wordCount} words.
+              </Typography>
+              {loading ? (
+                <Box sx={{ mt: 4 }}>
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <>
+                  {error && (
+                    <Typography color="error" sx={{ mt: 4 }}>
+                      {error}
+                    </Typography>
+                  )}
+                  {!showWordList ? (
+                    // Chapter list section
+                    <Fade in={!showWordList}>
+                      <Box sx={{ mt: 4 }}>
+                        <Typography
+                          variant="h6"
+                          component="p"
+                          sx={{
+                            mt: 4,
+                            color: "#757575",
+                            animation: "zoom 2s infinite",
+                            "@keyframes zoom": {
+                              "0%": { transform: "scale(1)" },
+                              "50%": { transform: "scale(1.2)" },
+                              "100%": { transform: "scale(1)" },
+                            },
+                          }}
+                        >
+                          Select a chapter
+                        </Typography>
+                        <Box
+                          sx={{
+                            width: "350px",
+                            mt: 2,
+                            mb: isMobileView ? 4 : 0,
+                            maxHeight: "300px", // Set a max height to enable scrolling
+                            overflowY: "auto",
+                            paddingRight: "20px",
+                          }}
+                        >
+                          <List
                             sx={{
-                              width: "300px",
-                              mt: 2,
-                              mb: isMobileView ? 4 : 0,
-                              maxHeight: "200px", // Set a max height to enable scrolling
-                              overflow: "auto", // Enable scrolling
+                              width: "100%",
+                              padding: "20px",
                             }}
                           >
-                            <List>
-                              {chapters.map((chapter) => (
-                                <CustomListItem
-                                  key={chapter.id}
-                                  disablePadding
-                                  button
-                                  onClick={() => handleChapterClick(chapter)}
-                                  sx={{
-                                    backgroundColor:
-                                      selectedChapter?.id === chapter.id
-                                        ? "#e0e0e0"
-                                        : "transparent",
-                                  }}
-                                >
-                                  <ListItemText
-                                    primary={chapter.id}
-                                    sx={{ ml: 2 }}
-                                  ></ListItemText>
-                                </CustomListItem>
-                              ))}
-                            </List>
-                          </Box>
-                        </Box>
-                      </Fade>
-                    ) : (
-                      // Word list section
-                      <Fade in={showWordList}>
-                        <Box sx={{ mt: 4 }}>
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            size="large"
-                            onClick={() => setShowWordList(false)} // Back button to go back to chapter list
-                            sx={{ mt: 2 }}
-                          >
-                            Back
-                          </Button>
-                          <Typography variant="h6" component="p" sx={{ mt: 4 }}>
-                            Select a word:
-                          </Typography>
-                          <Box sx={{ width: "100%", mt: 2, mb: 2 }}>
-                            {selectedChapter.words.map((word) => (
-                              <Button
-                                key={word}
-                                variant="contained"
-                                color={
-                                  selectedWord === word
-                                    ? "secondary"
-                                    : "primary"
-                                }
-                                size="large"
-                                onClick={() => handleWordClick(word)}
+                            {chapters.map((chapter) => (
+                              <CustomListItem
+                                key={chapter.id}
+                                button
+                                onClick={() => handleChapterClick(chapter)}
                                 sx={{
-                                  marginRight: 2,
-                                  marginBottom: 2,
-                                  minWidth: "120px",
+                                  backgroundColor:
+                                    selectedChapter?.id === chapter.id
+                                      ? "#e0e0e0"
+                                      : "transparent",
+                                  borderRadius: "10px",
+                                  margin: "15px",
+                                  padding: "15px",
+                                  boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+                                  transition: "all 0.3s ease-in-out",
+                                  "&:hover": {
+                                    transform: "scale(1.05)",
+                                    boxShadow:
+                                      "0px 0px 20px rgba(0, 0, 0, 0.2)",
+                                  },
                                 }}
                               >
-                                {word}
-                              </Button>
+                                <ListItemText
+                                  primary={chapter.id}
+                                  sx={{
+                                    ml: 2,
+                                  }}
+                                />
+                              </CustomListItem>
                             ))}
-                          </Box>
+                          </List>
                         </Box>
-                      </Fade>
-                    )}
-                    {/* {!selectedChapter && !showWordList && (
+                      </Box>
+                    </Fade>
+                  ) : (
+                    // Word list section
+                    <Fade in={showWordList}>
+                      <Box sx={{ mt: 4 }}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          size="large"
+                          onClick={() => setShowWordList(false)} // Back button to go back to chapter list
+                          sx={{ mt: 2 }}
+                        >
+                          Back
+                        </Button>
+                        <Typography variant="h6" component="p" sx={{ mt: 4 }}>
+                          Select a word:
+                        </Typography>
+                        <Box sx={{ width: "100%", mt: 2, mb: 2 }}>
+                          {selectedChapter.words.map((word) => (
+                            <Button
+                              key={word}
+                              variant="contained"
+                              color={
+                                selectedWord === word ? "secondary" : "primary"
+                              }
+                              size="large"
+                              onClick={() => handleWordClick(word)}
+                              sx={{
+                                marginRight: 2,
+                                marginBottom: 2,
+                                minWidth: "120px",
+                                borderRadius: "50px",
+                                boxShadow: "0px 5px 10px rgba(0, 0, 0, 0.2)",
+                                transition: "all 0.3s ease-in-out",
+                                "&:hover": {
+                                  transform: "scale(1.1)",
+                                  boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.2)",
+                                },
+                                "&:active": {
+                                  transform: "scale(0.9)",
+                                  boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
+                                },
+                              }}
+                            >
+                              {word}
+                            </Button>
+                          ))}
+                        </Box>
+                      </Box>
+                    </Fade>
+                  )}
+                  {/* {!selectedChapter && !showWordList && (
                       <Button
                         variant="contained"
                         color="primary"
@@ -422,10 +458,9 @@ const HomeDetails = () => {
                         Start Learning
                       </Button>
                     )} */}
-                  </>
-                )}
-              </>
-            )}
+                </>
+              )}
+            </>
           </HomeDetailsPaper>
         </Grid>
       </HomeDetailsContainer>
