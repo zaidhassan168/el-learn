@@ -21,7 +21,6 @@ import RestoreRoundedIcon from "@mui/icons-material/RestoreRounded";
 import LocalLibraryRoundedIcon from "@mui/icons-material/LocalLibraryRounded";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import AppSettingsAltRoundedIcon from "@mui/icons-material/AppSettingsAltRounded";
-import Icon from '@mui/material/Icon';
 
 import { auth } from "../utils/Firebase";
 import { useNavigate } from "react-router-dom";
@@ -206,6 +205,7 @@ export default function Home() {
         open={open}
         onMouseLeave={handleDrawerClose}
         onMouseOver={handleDrawerOpen}
+
       >
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>

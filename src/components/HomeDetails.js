@@ -330,12 +330,13 @@ const HomeDetails = () => {
                   {!showWordList ? (
                     // Chapter list section
                     <Fade in={!showWordList}>
-                      <Box sx={{ mt: 4 }}>
+                      <Box sx={{ mt: 5, mb: 5 }}>
                         <Typography
                           variant="h6"
                           component="p"
                           sx={{
                             mt: 4,
+                            mb: 10,
                             color: "#757575",
                             animation: "zoom 2s infinite",
                             "@keyframes zoom": {
