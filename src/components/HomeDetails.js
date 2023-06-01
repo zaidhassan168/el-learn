@@ -68,14 +68,7 @@ const HomeDetails = () => {
   const [apiResponse, setApiResponse] = useState(null);
   const [apiResponse2, setApiResponse2] = useState(null);
   const [isCalling, setIsCalling] = useState(false);
-  // const [audioElement, setAudioElement] = useState(true);
   const [translatedWord, setTranslatedWord] = useState(null);
-
-  //   const speech = new Speech() // will throw an exception if not browser supported
-  // if(speech.hasBrowserSupport()) { // returns a boolean
-  //     console.log("speech synthesis supported")
-  // }
-
   const speech = new Speech();
   speech
     .init({
@@ -183,30 +176,6 @@ const HomeDetails = () => {
     } catch (error) {
       console.error(error);
     }
-    // const url =
-    //   "https://api.cognitive.microsofttranslator.com/dictionary/lookup?api-version=3.0&from=en&to=es";
-    // const options = {
-    //   method: "POST",
-    //   headers: {
-    //     "content-type": "application/json",
-    //     "X-RapidAPI-Key": "5b0660e3ccmsh44e5c1389cde10fp1e1b42jsn2d96ee274fca",
-    //     "X-RapidAPI-Host": "microsoft-translator-text.p.rapidapi.com",
-    //   },
-    //   body: [
-    //     {
-    //       Text: "fly",
-    //       Translation: "volar",
-    //     },
-    //   ],
-    // };
-
-    // try {
-    //   const response = await fetch(url, options);
-    //   const result = await response.text();
-    //   console.log(result);
-    // } catch (error) {
-    //   console.error(error);
-    // }
   };
 
   const handleNextWord = async () => {
@@ -330,36 +299,6 @@ const HomeDetails = () => {
       throw new Error(error);
     }
   };
-  // const callTextToSpeechAPI = async (word) => {
-  //   const url = `https://text-to-speech27.p.rapidapi.com/speech?text=${encodeURIComponent(word)}&lang=sv`;
-  //   const options = {
-  //     method: 'GET',
-  //     headers: {
-  //       'X-RapidAPI-Key': '5b0660e3ccmsh44e5c1389cde10fp1e1b42jsn2d96ee274fca',
-  //       'X-RapidAPI-Host': 'text-to-speech27.p.rapidapi.com'
-  //     }
-  //   };
-
-  //   try {
-  //     const response = await fetch(url, options);
-
-  //     const result = await response.blob();
-  //   const audioUrl = URL.createObjectURL(result);
-  //   const newAudioElement = new Audio(audioUrl);
-  //   setAudioElement(newAudioElement);
-  //   newAudioElement.play();
-
-  //     // Create a URL for the blob object
-
-  //     // Create an Audio element and set the source to the URL
-  //     // const audioElement = new Audio(audioUrl);
-
-  //     // Play the audio
-  //     // audioElement.play();
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
 
   const handlePlayAudio = async (word) => {
     console.log(word);
@@ -380,11 +319,6 @@ const HomeDetails = () => {
     setShowWordDialog(false);
   };
 
-  // const handleStartLearning = () => {
-  //   setLearningStarted(true);
-  //   // Navigate to WordCard component
-  //   // You can use your preferred method of navigation here
-  // };
 
   return (
     <HomeContainer>
@@ -534,17 +468,6 @@ const HomeDetails = () => {
                       </Box>
                     </Fade>
                   )}
-                  {/* {!selectedChapter && !showWordList && (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        size="large"
-                        onClick={handleStartLearning}
-                        sx={{ mt: 4 }}
-                      >
-                        Start Learning
-                      </Button>
-                    )} */}
                 </>
               )}
             </>
@@ -595,22 +518,6 @@ const HomeDetails = () => {
                     <p>
                       <strong>Confidence:</strong> {translation.confidence}
                     </p>
-                    {/* <p>
-                <strong>Back Translations:</strong>
-              </p>
-              <ul>
-                {translation.backTranslations.map((backTranslation) => (
-                  <li key={backTranslation.normalizedText}>
-                    <p>
-                      <strong>Text:</strong> {backTranslation.displayText}
-                    </p>
-                    <p>
-                      <strong>Frequency Count:</strong>{' '}
-                      {backTranslation.frequencyCount}
-                    </p>
-                  </li>
-                ))}
-              </ul> */}
                   </div>
                 ))}
                 <h3>Examples:</h3>
