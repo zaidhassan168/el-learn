@@ -27,7 +27,7 @@ import Speech from "speak-tts";
 const HomeContainer = styled(Box)({
   backgroundImage: `url(${Image})`,
   backgroundSize: "cover",
-  minHeight: "120vh",
+  minHeight: "100vh",
   backgroundAttachment: "fixed",
   backgroundPosition: "center bottom", // Adjust the background position
 });
@@ -70,6 +70,7 @@ const HomeDetails = () => {
   const [isCalling, setIsCalling] = useState(false);
   const [translatedWord, setTranslatedWord] = useState(null);
   const speech = new Speech();
+
   speech
     .init({
       volume: 1,
@@ -198,6 +199,8 @@ const HomeDetails = () => {
         console.log(apiResponse2[0].examples);
         // setApiResponse2(result2);
         setIsCalling(false);
+        setTranslatedWord(result[0].translations[0].displayTarget);
+
         // console.log(result[0].translations);
         // Update the response state variable for the next word
         // Example: setApiResponse(result);
@@ -222,6 +225,8 @@ const HomeDetails = () => {
         // callTextToSpeechAPI(result[0].displaySource);
 
         setIsCalling(false);
+        setTranslatedWord(result[0].translations[0].displayTarget);
+
         console.log(result);
         // show output in log by converting to json
         // console.log(result[0]);
