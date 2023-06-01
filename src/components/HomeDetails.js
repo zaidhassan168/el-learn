@@ -22,6 +22,8 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
+import Speech from "speak-tts";
+
 const HomeContainer = styled(Box)({
   backgroundImage: `url(${Image})`,
   backgroundSize: "cover",
@@ -66,6 +68,37 @@ const HomeDetails = () => {
   const [apiResponse, setApiResponse] = useState(null);
   const [apiResponse2, setApiResponse2] = useState(null);
   const [isCalling, setIsCalling] = useState(false);
+  // const [audioElement, setAudioElement] = useState(true);
+  const [translatedWord, setTranslatedWord] = useState(null);
+
+  //   const speech = new Speech() // will throw an exception if not browser supported
+  // if(speech.hasBrowserSupport()) { // returns a boolean
+  //     console.log("speech synthesis supported")
+  // }
+
+  const speech = new Speech();
+  speech
+    .init({
+      volume: 1,
+      lang: "sv-SE",
+      rate: 1,
+      pitch: 1,
+      voice: "Alva",
+      splitSentences: true,
+      // listeners: {
+      //   onvoiceschanged: (voices) => {
+      //     console.log("Event voiceschanged", voices);
+      //   },
+      // },
+    })
+    .then((data) => {
+      // The "data" object contains the list of available voices and the voice synthesis params
+      console.log("Speech is ready, voices are available", data);
+    })
+    .catch((e) => {
+      console.error("An error occured while initializing : ", e);
+    });
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -97,6 +130,7 @@ const HomeDetails = () => {
         setLoading(false);
       } catch (error) {
         setLoading(false);
+        console.log(error);
         setError("Failed to fetch data.");
       }
     };
@@ -138,7 +172,10 @@ const HomeDetails = () => {
         result[0].displaySource,
         result[0].translations[0].displayTarget
       );
+      // callTextToSpeechAPI(result[0].displaySource);
+
       setIsCalling(false);
+      setTranslatedWord(result[0].translations[0].displayTarget);
       console.log(result[0].translations);
       setApiResponse(result);
       // Update the response state variable for the next word
@@ -186,6 +223,8 @@ const HomeDetails = () => {
           result[0].displaySource,
           result[0].translations[0].displayTarget
         );
+        // callTextToSpeechAPI(result[0].displaySource);
+
         // console.log(result2);
         console.log(apiResponse2[0].examples);
         // setApiResponse2(result2);
@@ -211,6 +250,8 @@ const HomeDetails = () => {
           result[0].displaySource,
           result[0].translations[0].displayTarget
         );
+        // callTextToSpeechAPI(result[0].displaySource);
+
         setIsCalling(false);
         console.log(result);
         // show output in log by converting to json
@@ -229,7 +270,7 @@ const HomeDetails = () => {
     let endpoint = "https://api.cognitive.microsofttranslator.com";
     let location = "eastus";
 
-    const url = `${endpoint}/dictionary/lookup?api-version=3.0&from=en&to=ar`;
+    const url = `${endpoint}/dictionary/lookup?api-version=3.0&from=en&to=sv`;
 
     const options = {
       method: "POST",
@@ -263,7 +304,7 @@ const HomeDetails = () => {
     let endpoint = "https://api.cognitive.microsofttranslator.com";
     let location = "eastus";
 
-    const url = `${endpoint}/dictionary/examples?api-version=3.0&from=en&to=ar`;
+    const url = `${endpoint}/dictionary/examples?api-version=3.0&from=en&to=sv`;
     const options = {
       method: "POST",
       headers: {
@@ -288,6 +329,51 @@ const HomeDetails = () => {
     } catch (error) {
       throw new Error(error);
     }
+  };
+  // const callTextToSpeechAPI = async (word) => {
+  //   const url = `https://text-to-speech27.p.rapidapi.com/speech?text=${encodeURIComponent(word)}&lang=sv`;
+  //   const options = {
+  //     method: 'GET',
+  //     headers: {
+  //       'X-RapidAPI-Key': '5b0660e3ccmsh44e5c1389cde10fp1e1b42jsn2d96ee274fca',
+  //       'X-RapidAPI-Host': 'text-to-speech27.p.rapidapi.com'
+  //     }
+  //   };
+
+  //   try {
+  //     const response = await fetch(url, options);
+
+  //     const result = await response.blob();
+  //   const audioUrl = URL.createObjectURL(result);
+  //   const newAudioElement = new Audio(audioUrl);
+  //   setAudioElement(newAudioElement);
+  //   newAudioElement.play();
+
+  //     // Create a URL for the blob object
+
+  //     // Create an Audio element and set the source to the URL
+  //     // const audioElement = new Audio(audioUrl);
+
+  //     // Play the audio
+  //     // audioElement.play();
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  const handlePlayAudio = async (word) => {
+    console.log(word);
+
+    speech
+      .speak({
+        text:word,
+      })
+      .then(() => {
+        console.log("Success !");
+      })
+      .catch((e) => {
+        console.error("An error occurred :", e);
+      });
   };
 
   const handleCloseDialog = () => {
@@ -501,7 +587,7 @@ const HomeDetails = () => {
                       <strong>English:</strong> {apiResponse[0].displaySource}
                     </p>
                     <p>
-                      <strong>Arabic:</strong> {translation.displayTarget}
+                      <strong>Swedish:</strong> {translation.displayTarget}
                     </p>
                     <p>
                       <strong>Part of Speech:</strong> {translation.posTag}
@@ -537,7 +623,7 @@ const HomeDetails = () => {
                           {example.sourceTerm} {example.sourceSuffix}
                         </p>
                         <p>
-                          <strong>Arabic:</strong> {example.targetPrefix}
+                          <strong>Swedish:</strong> {example.targetPrefix}
                           {example.targetTerm} {example.targetSuffix}
                         </p>
                       </div>
@@ -546,6 +632,15 @@ const HomeDetails = () => {
                 )}
               </div>
             )}
+
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handlePlayAudio(translatedWord)}
+              >
+                Play Audio
+              </Button>
+
           </DialogContent>
         )}
         <DialogActions>
