@@ -305,7 +305,7 @@ const HomeDetails = () => {
 
     speech
       .speak({
-        text:word,
+        text: word,
       })
       .then(() => {
         console.log("Success !");
@@ -318,7 +318,6 @@ const HomeDetails = () => {
   const handleCloseDialog = () => {
     setShowWordDialog(false);
   };
-
 
   return (
     <HomeContainer>
@@ -504,23 +503,22 @@ const HomeDetails = () => {
             {apiResponse && apiResponse.length > 0 && (
               <div>
                 <h3>Translations:</h3>
-                {apiResponse[0].translations.map((translation) => (
-                  <div key={translation.normalizedTarget}>
+                {apiResponse[0].translations.length > 0 && (
+                  <div>
                     <p>
                       <strong>English:</strong> {apiResponse[0].displaySource}
                     </p>
                     <p>
-                      <strong>Swedish:</strong> {translation.displayTarget}
+                      <strong>Swedish:</strong>{" "}
+                      {apiResponse[0].translations[0].displayTarget}
                     </p>
                     <p>
-                      <strong>Part of Speech:</strong> {translation.posTag}
-                    </p>
-                    <p>
-                      <strong>Confidence:</strong> {translation.confidence}
+                      <strong>Part of Speech:</strong>{" "}
+                      {apiResponse[0].translations[0].posTag}
                     </p>
                   </div>
-                ))}
-                <h3>Examples:</h3>
+                )}
+                {/* <h3>Examples:</h3>
                 {apiResponse2 && apiResponse2.length > 0 && (
                   <div>
                     {apiResponse2[0].examples.map((example) => (
@@ -536,18 +534,17 @@ const HomeDetails = () => {
                       </div>
                     ))}
                   </div>
-                )}
+                )} */}
               </div>
             )}
 
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => handlePlayAudio(translatedWord)}
-              >
-                Play Audio
-              </Button>
-
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handlePlayAudio(translatedWord)}
+            >
+              Play Audio
+            </Button>
           </DialogContent>
         )}
         <DialogActions>

@@ -1,32 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/database';
-import Box from '@mui/material/Box';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import Slide from '@mui/material/Slide';
-import TextField from '@mui/material/TextField';
-import Image from '..//assets/pexels.jpg';
-
+import React, { useEffect, useState } from "react";
+import firebase from "firebase/compat/app";
+import "firebase/compat/database";
+import Box from "@mui/material/Box";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
+import Slide from "@mui/material/Slide";
+import TextField from "@mui/material/TextField";
+import Image from "..//assets/pexels.jpg";
+// import storeWords from '../utils/StoreWords';
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const WordPractice = ({ chapter }) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [translation, setTranslation] = useState('');
-  const [answer, setAnswer] = useState('');
-  const [error, setError] = useState('');
+  const [translation, setTranslation] = useState("");
+  const [answer, setAnswer] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const getTranslation = async (word) => {
@@ -37,7 +37,7 @@ const WordPractice = ({ chapter }) => {
         const translation = data.translation;
         setTranslation(translation);
       } catch (error) {
-        console.error('API call failed:', error);
+        console.error("API call failed:", error);
       }
     };
 
@@ -48,42 +48,48 @@ const WordPractice = ({ chapter }) => {
   const handleNextWord = () => {
     if (currentWordIndex < chapter.words.length - 1) {
       setCurrentWordIndex(currentWordIndex + 1);
-      setAnswer('');
-      setError('');
+      setAnswer("");
+      setError("");
     }
   };
 
   const handlePreviousWord = () => {
     if (currentWordIndex > 0) {
       setCurrentWordIndex(currentWordIndex - 1);
-      setAnswer('');
-      setError('');
+      setAnswer("");
+      setError("");
     }
   };
 
   const handleAnswerChange = (event) => {
     setAnswer(event.target.value);
-    setError('');
+    setError("");
   };
 
   const handleCheckAnswer = () => {
     if (answer.toLowerCase() === translation.toLowerCase()) {
       handleNextWord();
     } else {
-      setError('Incorrect answer. Try again.');
+      setError("Incorrect answer. Try again.");
     }
   };
 
   const handleCloseDialog = () => {
     setCurrentWordIndex(0);
-    setAnswer('');
-    setError('');
+    setAnswer("");
+    setError("");
   };
 
   const word = chapter.words[currentWordIndex];
 
   return (
-    <Dialog open onClose={handleCloseDialog} TransitionComponent={Transition} maxWidth="sm" fullWidth>
+    <Dialog
+      open
+      onClose={handleCloseDialog}
+      TransitionComponent={Transition}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle>{chapter.title}</DialogTitle>
       <DialogContent>
         {chapter.words.length > 0 ? (
@@ -103,7 +109,11 @@ const WordPractice = ({ chapter }) => {
               onChange={handleAnswerChange}
               sx={{ mb: 2 }}
             />
-            <Button variant="contained" onClick={handleCheckAnswer} sx={{ mb: 2 }}>
+            <Button
+              variant="contained"
+              onClick={handleCheckAnswer}
+              sx={{ mb: 2 }}
+            >
               Check Answer
             </Button>
             {error && (
@@ -112,7 +122,11 @@ const WordPractice = ({ chapter }) => {
               </Typography>
             )}
             <div>
-              <Button variant="contained" onClick={handlePreviousWord} disabled={currentWordIndex === 0}>
+              <Button
+                variant="contained"
+                onClick={handlePreviousWord}
+                disabled={currentWordIndex === 0}
+              >
                 Previous Word
               </Button>
               <Button
@@ -126,7 +140,9 @@ const WordPractice = ({ chapter }) => {
             </div>
           </>
         ) : (
-          <DialogContentText>No words found for this chapter.</DialogContentText>
+          <DialogContentText>
+            No words found for this chapter.
+          </DialogContentText>
         )}
       </DialogContent>
       <DialogActions>
@@ -144,8 +160,8 @@ const ChaptersList = () => {
   useEffect(() => {
     const fetchChapters = async () => {
       try {
-        const databaseRef = firebase.database().ref('chapters');
-        const snapshot = await databaseRef.once('value');
+        const databaseRef = firebase.database().ref("chapters");
+        const snapshot = await databaseRef.once("value");
         const chaptersData = snapshot.val();
 
         if (chaptersData) {
@@ -158,7 +174,7 @@ const ChaptersList = () => {
           setChapters(chaptersArray);
         }
       } catch (error) {
-        console.error('Failed to fetch chapters:', error);
+        console.error("Failed to fetch chapters:", error);
       }
     };
 
@@ -177,29 +193,33 @@ const ChaptersList = () => {
 
   return (
     <Box
-      sx={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        backgroundColor: '#f5f5f5',
-        padding: '20px',
-        borderRadius: '10px',
-        backgroundImage: `url(${Image})`,
-        backgroundSize: 'cover',
-        minHeight: '120vh',
-        backgroundPosition: 'center bottom', // Adjust the background position
-        backgroundAttachment: 'fixed', // Fix the background image so that it doesn't scroll
-      }}
-    >
-      <List sx={{ width: '200px', marginRight: '20px' }}>
+    sx={{
+      display: "flex", flexDirection: "row", height: "100vh",
+      backgroundImage: `url(${Image})`,
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "cover",
+       }}>
+      <List
+        sx={{
+          width: "200px",
+          marginRight: "20px",
+          maxHeight: "100vh",
+          overflowY: "auto",
+          backgroundColor: "rgba(255, 255, 255, 0.5)",
+        }}
+      >
         {chapters.map((chapter) => (
-          <ListItemButton key={chapter.id} onClick={() => handleClickChapter(chapter)}>
+          <ListItemButton
+            key={chapter.id}
+            onClick={() => handleClickChapter(chapter)}
+          >
             <ListItemText primary={chapter.title} />
           </ListItemButton>
         ))}
       </List>
-      <Dialog open={openDialog} onClose={handleCloseDialog} TransitionComponent={Transition} maxWidth="sm" fullWidth>
-        {selectedChapter && <WordPractice chapter={selectedChapter} />}
-      </Dialog>
+      {selectedChapter && (
+      <WordPractice chapter={selectedChapter} />
+    )}
     </Box>
   );
 };

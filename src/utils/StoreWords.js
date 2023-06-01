@@ -1,10 +1,37 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/database";
 
-const storeWords = (words) => {
-  const databaseRef = firebase.database().ref("words");
+const storeWords = () => {
+  const translations = [
+    'Äpple',
+    'Bok',
+    'Katt',
+    'Hund',
+    'Elefant',
+    'Vän',
+    'Hus',
+    'Internet',
+    'Jobb',
+    'Nyckel',
+    'Kärlek',
+    'Pengar',
+    'Natt',
+    'Hav',
+    'Papper',
+    'Drottning',
+    'Regn',
+    'Sol',
+    'Träd',
+    'Paraply',
+    'Röst',
+    'Vatten',
+    'Röntgen',
+    'Gul',
+    'Zoo',
+  ];
+  const databaseRef = firebase.database().ref("translations");
   databaseRef
-    .set(words)
+    .set(translations)
     .then(() => {
       console.log("Words stored successfully.");
     })
@@ -99,6 +126,34 @@ const words = [
   'Yellow',
   'Zoo',
 ]
+
+const translations = [
+  'Äpple',
+  'Bok',
+  'Katt',
+  'Hund',
+  'Elefant',
+  'Vän',
+  'Hus',
+  'Internet',
+  'Jobb',
+  'Nyckel',
+  'Kärlek',
+  'Pengar',
+  'Natt',
+  'Hav',
+  'Papper',
+  'Drottning',
+  'Regn',
+  'Sol',
+  'Träd',
+  'Paraply',
+  'Röst',
+  'Vatten',
+  'Röntgen',
+  'Gul',
+  'Zoo',
+];
 // Function to add words to each chapter
 export const addWordsToChapters = async () => {
   try {
