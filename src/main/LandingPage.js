@@ -23,11 +23,11 @@ const LandingPage = () => {
       <div className="hero">
         <h1>Learn a New Language Today</h1>
         <p>Start your language learning journey with our interactive tool.</p>
-        <Button variant="contained" color="primary">
+        <Button variant="contained" color="primary" href="/signup">
           Get Started
         </Button>
       </div>
-      <div className="features">
+      {/* <div className="features">
         <div className="feature">
           <h2>Interactive Flashcards</h2>
           <p>Practice vocabulary and study efficiently with our interactive flashcards.</p>
@@ -40,7 +40,7 @@ const LandingPage = () => {
           <h2>Pronunciation Guides</h2>
           <p>Master language pronunciation with our in-depth guides and audio resources.</p>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

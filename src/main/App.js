@@ -40,7 +40,7 @@ const App = () => {
         <header>
           <Zoom in={true} timeout={1000}>
             <Typography variant="h2" animation="wave" color="rgb(22,95,199)">
-              El-Learn
+              e-Learn
             </Typography>
           </Zoom>
         </header>

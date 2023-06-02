@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import { styled } from "@mui/material/styles";
-import Image from "../assets/pexels.jpg";
+import SvgBackground from "../assets/abstract.svg";
 // import WordCard from "./WordCard";
 import { auth } from "../utils/Firebase";
 import firebase from "firebase/compat/app";
@@ -25,7 +25,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Speech from "speak-tts";
 
 const HomeContainer = styled(Box)({
-  backgroundImage: `url(${Image})`,
+  backgroundImage: `url(${SvgBackground})`,
   backgroundSize: "cover",
   minHeight: "100vh",
   backgroundAttachment: "fixed",
@@ -75,7 +75,7 @@ const HomeDetails = () => {
     .init({
       volume: 1,
       lang: "sv-SE",
-      rate: 1,
+      rate: 0.8,
       pitch: 1,
       voice: "Alva",
       splitSentences: true,

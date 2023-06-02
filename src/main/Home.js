@@ -193,7 +193,7 @@ export default function Home() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            El-Learn
+            e-Learn
           </Typography>
           <Button color="inherit" onClick={handleLogout}>
             Logout
