@@ -17,7 +17,6 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Zoom from "@mui/material/Zoom";
 
 import { auth } from "../utils/Firebase";
-// import { Login } from "@mui/icons-material";
 
 function LogIn() {
   const [username, setUsername] = useState("");
@@ -49,8 +48,8 @@ function LogIn() {
         console.log(error.code);
         switch (error.code) {
           case "auth/user-not-found":
-            setUsernameError("Invalid email or password");
-            setPasswordError("Invalid email or password");
+            setUsernameError("Invalid email");
+            setPasswordError("Invalid password");
             break;
           case "auth/wrong-password":
             setPasswordError("Invalid email or password");
@@ -95,11 +94,12 @@ function LogIn() {
                     label="Username"
                     name="username"
                     autoFocus
-                    onChange={(event) => setUsername(event.target.value)}
-                    {...(usernameError && {
-                      error: true,
-                      helperText: usernameError,
-                    })}
+                    onChange={(event) => {
+                      setUsername(event.target.value);
+                      setUsernameError("");
+                    }}
+                    error={!!usernameError}
+                    helperText={usernameError}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -111,11 +111,12 @@ function LogIn() {
                     type="password"
                     id="password"
                     autoComplete="current-password"
-                    onChange={(event) => setPassword(event.target.value)}
-                    {...(passwordError && {
-                      error: true,
-                      helperText: passwordError,
-                    })}
+                    onChange={(event) => {
+                      setPassword(event.target.value);
+                      setPasswordError("");
+                    }}
+                    error={!!passwordError}
+                    helperText={passwordError}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -146,5 +147,6 @@ function LogIn() {
       </Container>
     </ThemeProvider>
   );
-};
+}
+
 export default LogIn;
