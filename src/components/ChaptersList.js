@@ -221,7 +221,7 @@ const ChaptersList = () => {
       // dbRef
       //   .child("score")
       //   .transaction((currentScore) => (currentScore || 0) + 1);
-      // setAnswer(true);
+      setAnswer(true);
       // handleNextWord();
     } else {
       setError("Incorrect answer. Try again.");
