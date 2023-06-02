@@ -143,7 +143,7 @@ export default function Home() {
       case "home":
         return (
           <>
-            <HomeDetails />
+           <ChaptersList />
           </>
         );
       case "learn":
@@ -167,7 +167,8 @@ export default function Home() {
         case "chaptersList":
           return (
             <>
-              <ChaptersList />
+             <HomeDetails />
+
             </>
           );
       default:
@@ -233,7 +234,7 @@ export default function Home() {
               item: "learn",
             },
             {
-              label: "Chapters",
+              label: "Chapter Word Details",
               icon: <ImportContactsRoundedIcon/>,
               item: "chaptersList",
             },

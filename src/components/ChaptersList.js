@@ -25,7 +25,7 @@ import Speech from "speak-tts";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import IconButton from "@mui/material/IconButton";
 import ListItem from "@mui/material/ListItem";
-
+import waiting from "../assets/animations/waiting-pigeon.json";
 const ChaptersList = () => {
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -427,6 +427,31 @@ const ChaptersList = () => {
           </Button>
         </Box>
       )}
+      {!selectedChapter && (
+        <Box
+          sx={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            animation: "fadeIn 1s ease-in-out",
+          }}
+        >
+          <Lottie
+            animationData={waiting}
+            style={{ width: "300px", height: "300px" }}
+          />
+          <Typography
+            variant="h5"
+            sx={{ textAlign: "center" }}
+          >
+            Select a chapter to start learning
+          </Typography>
+
+          </Box>
+      )}
+
     </Box>
   );
 };
