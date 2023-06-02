@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Box,
   List,
-  ListItemButton,
   ListItemText,
   Typography,
   Card,
@@ -13,6 +12,7 @@ import {
   Radio,
   Button,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { shuffle } from "../utils/Funtions";
 import SvgBackground from "../assets/abstract.svg";
 import firebase from "firebase/compat/app";
@@ -24,6 +24,7 @@ import correct from "../assets/animations/correct.json";
 import Speech from "speak-tts";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import IconButton from "@mui/material/IconButton";
+import ListItem from "@mui/material/ListItem";
 
 const ChaptersList = () => {
   const [selectedChapter, setSelectedChapter] = useState(null);
@@ -59,7 +60,6 @@ const ChaptersList = () => {
         console.error("Failed to fetch chapters:", error);
       }
     };
-
 
     fetchChapters();
   }, []);
@@ -169,6 +169,13 @@ const ChaptersList = () => {
       });
   };
 
+  const CustomListItem = styled(ListItem)(({ theme }) => ({
+    "&:hover": {
+      backgroundColor: "#e0e0e0",
+      transform: "scale(1.10)", // Apply zoom effect
+      transition: "transform 0.3s", // Add transition animation
+    },
+  }));
   const handleClickChapter = (chapter) => {
     setSelectedChapter(chapter);
     setCurrentWordIndex(0);
@@ -177,7 +184,6 @@ const ChaptersList = () => {
     setSelectedChoice("");
     setError("");
     setAnswer(false);
-
   };
 
   const handleNextWord = () => {
@@ -188,7 +194,6 @@ const ChaptersList = () => {
       setSelectedChoice("");
       setError("");
       setAnswer(false);
-
     }
   };
 
@@ -213,7 +218,9 @@ const ChaptersList = () => {
     if (selectedChoice.toLowerCase() === translation.toLowerCase()) {
       setError("");
       dbRef.child("learnedWords").push(selectedChapter.words[currentWordIndex]);
-      dbRef.child("score").transaction((currentScore) => (currentScore || 0) + 1);
+      dbRef
+        .child("score")
+        .transaction((currentScore) => (currentScore || 0) + 1);
       setAnswer(true);
       // handleNextWord();
     } else {
@@ -224,23 +231,21 @@ const ChaptersList = () => {
     setSelectedChapter(null);
     setTranslation(null);
     setAnswer(false);
-
   };
   return (
     <Box
-    style={{
-      display: "flex",
-      flexDirection: "row",
-      height: "100vh",
-      width: "100%",
-      backgroundImage: `url(${SvgBackground})`,
-      backgroundSize: "auto",
-
-    }}
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        height: "100vh",
+        width: "100%",
+        backgroundImage: `url(${SvgBackground})`,
+        backgroundSize: "auto",
+      }}
     >
       <List
         sx={{
-          width: "200px",
+          width: "30vh",
           marginRight: "20px",
           maxHeight: "100vh",
           overflowY: "auto",
@@ -250,27 +255,36 @@ const ChaptersList = () => {
         }}
       >
         {chapters.map((chapter) => (
-          <ListItemButton
-            key={chapter.id}
-            onClick={() => handleClickChapter(chapter)}
+          <CustomListItem
+          key={chapter.id}
+          button
+          onClick={() => handleClickChapter(chapter)}
+          sx={{
+            backgroundColor:
+              selectedChapter?.id === chapter.id
+                ? "#e0e0e0"
+                : "transparent",
+            borderRadius: "10px",
+            margin: "8px",
+            paddingTop: "5px",
+            paddingBottom: "5px",
+            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+            transition: "all 0.3s ease-in-out",
+            "&:hover": {
+              transform: "scale(1.05)",
+              boxShadow:
+                "0px 0px 20px rgba(0, 0, 0, 0.2)",
+            },
+          }}
+        >
+          <ListItemText
+            primary={chapter.id}
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "10px",
-              borderRadius: "10px",
-              cursor: "pointer",
-              transition: "all 0.2s ease-in-out",
-              "&:hover": {
-                backgroundColor: "rgba(0, 0, 0, 0.1)",
-              },
+              color:'#1769aa',
+              ml: 2,
             }}
-          >
-            <ListItemText primary={chapter.title} />
-            <Typography variant="body2">
-              {chapter.words.length} words
-            </Typography>
-          </ListItemButton>
+          />
+        </CustomListItem>
         ))}
       </List>
       {selectedChapter && (
@@ -385,7 +399,7 @@ const ChaptersList = () => {
 
           {answer && (
             <Box>
-              <Typography color= "success"  sx={{ mt: 2, textAlign: "center" }}>
+              <Typography color="success" sx={{ mt: 2, textAlign: "center" }}>
                 Hurray..Correct answer!
               </Typography>
               <Lottie
@@ -398,10 +412,9 @@ const ChaptersList = () => {
           <Button
             variant="contained"
             onClick={handleClose}
-
             sx={{
               mt: 2,
-                backgroundColor: "rgba(255, 152, 0, 1)",
+              backgroundColor: "rgba(255, 152, 0, 1)",
               borderRadius: "10px",
               boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
               transition: "all 0.2s ease-in-out",
