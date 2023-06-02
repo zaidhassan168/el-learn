@@ -16,21 +16,27 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
-import StarIcon from "@mui/icons-material/Star";
-import SendIcon from "@mui/icons-material/Send";
-import DraftsIcon from "@mui/icons-material/Drafts";
+import ImportContactsRoundedIcon from '@mui/icons-material/ImportContactsRounded';
+import RestoreRoundedIcon from "@mui/icons-material/RestoreRounded";
+import LocalLibraryRoundedIcon from "@mui/icons-material/LocalLibraryRounded";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import AppSettingsAltRoundedIcon from "@mui/icons-material/AppSettingsAltRounded";
+
 import { auth } from "../utils/Firebase";
 import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
-import { deepOrange, deepPurple } from "@mui/material/colors";
+import { deepPurple } from "@mui/material/colors";
 import { useState, useEffect } from "react";
 import WordCard from "../components/WordCard";
-import firebase from "firebase/compat/app";
+import Settings from "../components/Settings";
+// import firebase from "firebase/compat/app";
 import "firebase/compat/database";
-import storeWords from "../utils/StoreWords";
+import History from "../components/History";
+import HomeDetails from "../components/HomeDetails";
+import ChaptersList from "../components/ChaptersList";
+
+// import storeWords from "../utils/StoreWords";
 
 const drawerWidth = 240;
 
@@ -103,34 +109,19 @@ export default function Home() {
   const theme = useTheme();
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
-  const [selectedItem, setSelectedItem] = useState("inbox");
-  // const [currentUser, setCurrentUser] = useState(null);
-  // const [firstName, setFirstName] = useState("");
-  // const [lastName, setLastName] = useState("");
+  const [selectedItem, setSelectedItem] = useState("home"); // set initial value to "home"
   const [displayName, setDisplayName] = useState("");
 
   useEffect(() => {
-
-    const user = firebase.auth().currentUser;
+    // const user = firebase.auth().currentUser;
+    // if (user && user.displayName) {
+    //   setDisplayName(user.displayName);
+    // }
+    const user = JSON.parse(localStorage.getItem("user"));
     if (user && user.displayName) {
       setDisplayName(user.displayName);
     }
     console.log(user);
-    // if (user) {
-    //   setCurrentUser(user);
-    //   const db = firebase.database();
-    //   const dbRef = db.ref("users/" + user.uid);
-    //   dbRef.get().then((snapshot) => {
-    //     if (snapshot.exists()) {
-    //       setFirstName(snapshot.val().firstName);
-    //       setLastName(snapshot.val().lastName);
-    //     } else {
-    //       console.log("No data available");
-    //     }
-    //   }).catch((error) => {
-    //     console.error(error);
-    //   });
-    // }
   }, []);
 
   const handleDrawerOpen = () => {
@@ -150,32 +141,40 @@ export default function Home() {
   const handleItemClick = (item) => {
     setSelectedItem(item);
   };
+
   const renderContent = () => {
     switch (selectedItem) {
-      case "inbox":
+      case "home":
         return (
           <>
-            <Typography paragraph>Inbox content...</Typography>
+           <ChaptersList />
           </>
         );
-      case "starred":
+      case "learn":
         return (
           <>
             <WordCard />
           </>
         );
-      case "sendEmail":
+      case "history":
         return (
           <>
-            <Typography paragraph>Send email content...</Typography>
+            <History />
           </>
         );
-      case "drafts":
+      case "settings":
         return (
           <>
-            <Typography paragraph>Drafts content...</Typography>
+            <Settings />
           </>
         );
+        case "chaptersList":
+          return (
+            <>
+             <HomeDetails />
+
+            </>
+          );
       default:
         return null;
     }
@@ -189,7 +188,7 @@ export default function Home() {
           <IconButton
             color="inherit"
             aria-label="open drawer"
-            onClick={handleDrawerOpen}
+            onMouseEnter={handleDrawerOpen}
             edge="start"
             sx={{
               marginRight: 5,
@@ -199,14 +198,20 @@ export default function Home() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            El-Learn
+            e-Learn
           </Typography>
           <Button color="inherit" onClick={handleLogout}>
             Logout
           </Button>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" open={open}>
+      <Drawer
+        variant="permanent"
+        open={open}
+        onMouseLeave={handleDrawerClose}
+        onMouseOver={handleDrawerOpen}
+
+      >
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
@@ -226,10 +231,24 @@ export default function Home() {
         <Divider />
         <List>
           {[
-            { label: "Inbox", icon: <InboxIcon />, item: "inbox" },
-            { label: "Starred", icon: <StarIcon />, item: "starred" },
-            { label: "Send email", icon: <SendIcon />, item: "sendEmail" },
-            { label: "Drafts", icon: <DraftsIcon />, item: "drafts" },
+            { label: "Home", icon: <HomeRoundedIcon />, item: "home" },
+            {
+              label: "Learn",
+              icon: <LocalLibraryRoundedIcon />,
+              item: "learn",
+            },
+            {
+              label: "Chapter Word Details",
+              icon: <ImportContactsRoundedIcon/>,
+              item: "chaptersList",
+            },
+            { label: "History", icon: <RestoreRoundedIcon />, item: "history" },
+            {
+              label: "Settings",
+              icon: <AppSettingsAltRoundedIcon color="blue">
+                </AppSettingsAltRoundedIcon>,
+              item: "settings",
+            },
           ].map((item) => (
             <ListItem
               key={item.item}
@@ -262,32 +281,9 @@ export default function Home() {
           ))}
         </List>
         <Divider />
-        {/* <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List> */}
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1 }}>
         <DrawerHeader />
-        {/* <Typography paragraph>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-
-        </Typography>
-        <Typography paragraph>
-          Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper
-
-        </Typography> */}
         {renderContent()}
       </Box>
     </Box>
