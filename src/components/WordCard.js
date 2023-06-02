@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography";
 import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 import CircularProgress from "@mui/material/CircularProgress";
-import Image from "..//assets/pexels.jpg";
+import SvgBackground from "../assets/abstract.svg";
 
 export default function WordCard() {
   const [word, setWord] = useState(null);
@@ -78,8 +78,8 @@ export default function WordCard() {
       backgroundColor: '#f5f5f5',
       padding: '20px',
       borderRadius: '10px',
-      backgroundImage: `url(${Image})`,
-      backgroundSize: 'cover',
+      backgroundImage: `url(${SvgBackground})`,
+      backgroundSize: 'auto',
       minHeight: '120vh',
       backgroundPosition: "center bottom", // Adjust the background position
       backgroundAttachment: "fixed", // Fix the background image so that it doesn't scroll
