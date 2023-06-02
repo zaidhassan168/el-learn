@@ -48,8 +48,8 @@ function LogIn() {
         console.log(error.code);
         switch (error.code) {
           case "auth/user-not-found":
-            setUsernameError("Invalid email or password");
-            setPasswordError("Invalid email or password");
+            setUsernameError("Invalid email");
+            setPasswordError("Invalid password");
             break;
           case "auth/wrong-password":
             setPasswordError("Invalid email or password");

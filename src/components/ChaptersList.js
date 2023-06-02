@@ -17,7 +17,7 @@ import { shuffle } from "../utils/Funtions";
 import SvgBackground from "../assets/abstract.svg";
 import firebase from "firebase/compat/app";
 import "firebase/compat/database";
-import { auth } from "../utils/Firebase";
+// import { auth } from "../utils/Firebase";
 import Lottie from "lottie-react";
 import wrong from "../assets/animations/wrong.json";
 import correct from "../assets/animations/correct.json";
@@ -37,9 +37,9 @@ const ChaptersList = () => {
   const speech = new Speech();
   const [answer, setAnswer] = useState(null);
   // const [currentUser, setCurrentUser] = useState(null);
-  const user = auth.currentUser;
-  const uid = user.uid;
-  const dbRef = firebase.database().ref("progress").child(uid);
+  // const user = firebase.auth().currentUser;
+  // const uid = user.uid;
+  // const dbRef = firebase.database().ref("progress").child(uid);
   useEffect(() => {
     const fetchChapters = async () => {
       try {
@@ -217,11 +217,11 @@ const ChaptersList = () => {
   const handleCheckAnswer = () => {
     if (selectedChoice.toLowerCase() === translation.toLowerCase()) {
       setError("");
-      dbRef.child("learnedWords").push(selectedChapter.words[currentWordIndex]);
-      dbRef
-        .child("score")
-        .transaction((currentScore) => (currentScore || 0) + 1);
-      setAnswer(true);
+      // dbRef.child("learnedWords").push(selectedChapter.words[currentWordIndex]);
+      // dbRef
+      //   .child("score")
+      //   .transaction((currentScore) => (currentScore || 0) + 1);
+      // setAnswer(true);
       // handleNextWord();
     } else {
       setError("Incorrect answer. Try again.");
@@ -245,7 +245,7 @@ const ChaptersList = () => {
     >
       <List
         sx={{
-          width: "30vh",
+          width: "30%",
           marginRight: "20px",
           maxHeight: "100vh",
           overflowY: "auto",

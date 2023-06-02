@@ -30,7 +30,7 @@ import { deepPurple } from "@mui/material/colors";
 import { useState, useEffect } from "react";
 import WordCard from "../components/WordCard";
 import Settings from "../components/Settings";
-import firebase from "firebase/compat/app";
+// import firebase from "firebase/compat/app";
 import "firebase/compat/database";
 import History from "../components/History";
 import HomeDetails from "../components/HomeDetails";
@@ -113,7 +113,11 @@ export default function Home() {
   const [displayName, setDisplayName] = useState("");
 
   useEffect(() => {
-    const user = firebase.auth().currentUser;
+    // const user = firebase.auth().currentUser;
+    // if (user && user.displayName) {
+    //   setDisplayName(user.displayName);
+    // }
+    const user = JSON.parse(localStorage.getItem("user"));
     if (user && user.displayName) {
       setDisplayName(user.displayName);
     }
