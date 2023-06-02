@@ -256,35 +256,32 @@ const ChaptersList = () => {
       >
         {chapters.map((chapter) => (
           <CustomListItem
-          key={chapter.id}
-          button
-          onClick={() => handleClickChapter(chapter)}
-          sx={{
-            backgroundColor:
-              selectedChapter?.id === chapter.id
-                ? "#e0e0e0"
-                : "transparent",
-            borderRadius: "10px",
-            margin: "8px",
-            paddingTop: "5px",
-            paddingBottom: "5px",
-            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-            transition: "all 0.3s ease-in-out",
-            "&:hover": {
-              transform: "scale(1.05)",
-              boxShadow:
-                "0px 0px 20px rgba(0, 0, 0, 0.2)",
-            },
-          }}
-        >
-          <ListItemText
-            primary={chapter.id}
+            key={chapter.id}
+            button
+            onClick={() => handleClickChapter(chapter)}
             sx={{
-              color:'#1769aa',
-              ml: 2,
+              backgroundColor:
+                selectedChapter?.id === chapter.id ? "#e0e0e0" : "transparent",
+              borderRadius: "10px",
+              margin: "8px",
+              paddingTop: "5px",
+              paddingBottom: "5px",
+              boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+              transition: "all 0.3s ease-in-out",
+              "&:hover": {
+                transform: "scale(1.05)",
+                boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.2)",
+              },
             }}
-          />
-        </CustomListItem>
+          >
+            <ListItemText
+              primary={chapter.id}
+              sx={{
+                color: "#1769aa",
+                ml: 2,
+              }}
+            />
+          </CustomListItem>
         ))}
       </List>
       {selectedChapter && (
@@ -444,14 +441,20 @@ const ChaptersList = () => {
           />
           <Typography
             variant="h5"
-            sx={{ textAlign: "center" }}
+            sx={{
+              textAlign: "center",
+              animation: "zoom 3s infinite",
+              "@keyframes zoom": {
+                "0%": { transform: "scale(1)" },
+                "50%": { transform: "scale(1.1)" },
+                "100%": { transform: "scale(1)" },
+              },
+            }}
           >
             Select a chapter to start learning
           </Typography>
-
-          </Box>
+        </Box>
       )}
-
     </Box>
   );
 };
