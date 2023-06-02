@@ -17,8 +17,10 @@ import { shuffle } from "../utils/Funtions";
 import SvgBackground from "../assets/abstract.svg";
 import firebase from "firebase/compat/app";
 import "firebase/compat/database";
+import { auth } from "../utils/Firebase";
 import Lottie from "lottie-react";
 import wrong from "../assets/animations/wrong.json";
+import correct from "../assets/animations/correct.json";
 import Speech from "speak-tts";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import IconButton from "@mui/material/IconButton";
@@ -32,7 +34,11 @@ const ChaptersList = () => {
   const [error, setError] = useState("");
   const [chapters, setChapters] = useState([]);
   const speech = new Speech();
-
+  const [answer, setAnswer] = useState(null);
+  // const [currentUser, setCurrentUser] = useState(null);
+  const user = auth.currentUser;
+  const uid = user.uid;
+  const dbRef = firebase.database().ref("progress").child(uid);
   useEffect(() => {
     const fetchChapters = async () => {
       try {
@@ -53,6 +59,7 @@ const ChaptersList = () => {
         console.error("Failed to fetch chapters:", error);
       }
     };
+
 
     fetchChapters();
   }, []);
@@ -119,7 +126,18 @@ const ChaptersList = () => {
         console.error("An error occured while initializing : ", e);
       });
   });
-
+  // useEffect(() => {
+  //   auth.onAuthStateChanged((user) => {
+  //     console.log(user);
+  //     if (user) {
+  //       const databaseRef = firebase
+  //         .database()
+  //         .ref("Progress")
+  //         .child(uid)
+  //       setDbRef(databaseRef);
+  //     }
+  //   });
+  // });
   useEffect(() => {
     if (translation) {
       const choices = [translation];
@@ -158,6 +176,8 @@ const ChaptersList = () => {
     setChoices([]);
     setSelectedChoice("");
     setError("");
+    setAnswer(false);
+
   };
 
   const handleNextWord = () => {
@@ -167,6 +187,8 @@ const ChaptersList = () => {
       setChoices([]);
       setSelectedChoice("");
       setError("");
+      setAnswer(false);
+
     }
   };
 
@@ -177,17 +199,23 @@ const ChaptersList = () => {
       setChoices([]);
       setSelectedChoice("");
       setError("");
+      setAnswer(false);
     }
   };
 
   const handleChoiceChange = (event) => {
     setSelectedChoice(event.target.value);
     setError("");
+    setAnswer(false);
   };
 
   const handleCheckAnswer = () => {
     if (selectedChoice.toLowerCase() === translation.toLowerCase()) {
-      handleNextWord();
+      setError("");
+      dbRef.child("learnedWords").push(selectedChapter.words[currentWordIndex]);
+      dbRef.child("score").transaction((currentScore) => (currentScore || 0) + 1);
+      setAnswer(true);
+      // handleNextWord();
     } else {
       setError("Incorrect answer. Try again.");
     }
@@ -195,6 +223,8 @@ const ChaptersList = () => {
   const handleClose = () => {
     setSelectedChapter(null);
     setTranslation(null);
+    setAnswer(false);
+
   };
   return (
     <Box
@@ -333,6 +363,7 @@ const ChaptersList = () => {
             </Button>
           </div>
           <Button
+            color="success"
             variant="contained"
             onClick={handleCheckAnswer}
             disabled={!selectedChoice}
@@ -351,12 +382,26 @@ const ChaptersList = () => {
               />
             </Box>
           )}
+
+          {answer && (
+            <Box>
+              <Typography color= "success"  sx={{ mt: 2, textAlign: "center" }}>
+                Hurray..Correct answer!
+              </Typography>
+              <Lottie
+                animationData={correct}
+                style={{ width: "100px", height: "100px", margin: "auto" }}
+              />
+            </Box>
+          )}
+
           <Button
             variant="contained"
             onClick={handleClose}
+
             sx={{
               mt: 2,
-              backgroundColor: "rgba(255, 255, 255, 0.8)",
+                backgroundColor: "rgba(255, 152, 0, 1)",
               borderRadius: "10px",
               boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
               transition: "all 0.2s ease-in-out",
