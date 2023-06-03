@@ -6,12 +6,56 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import { auth } from "../utils/Firebase";
-import {  updatePassword, updateProfile } from "@firebase/auth";
+import { updatePassword, updateProfile } from "@firebase/auth";
 import firebase from "firebase/compat/app";
-import '../css/settings.css'
+import { styled } from "@mui/material/styles";
+
+const StyledContainer = styled("div")(({ theme }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(2),
+}));
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(4),
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  background: "#fff",
+  boxShadow: "0px 3px 15px rgba(0, 0, 0, 0.1)",
+  borderRadius: "8px",
+}));
+
+const StyledSectionTitle = styled(Typography)(({ theme }) => ({
+  marginBottom: theme.spacing(4),
+}));
+
+const StyledForm = styled("form")(({ theme }) => ({
+  width: "100%",
+}));
+
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+  "& .MuiOutlinedInput-root": {
+    "&:hover fieldset": {
+      borderColor: theme.palette.primary.main,
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: theme.palette.primary.main,
+    },
+  },
+}));
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  width: "100%",
+  marginTop: theme.spacing(2),
+}));
+
+const StyledErrorMessage = styled(Typography)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  color: theme.palette.error.main,
+}));
 
 export default function Settings() {
-
   const [loading, setLoading] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -20,17 +64,18 @@ export default function Settings() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    console.log("currentUser", auth.currentUser.displayName);
     setDisplayName(auth.currentUser.displayName);
   }, []);
 
   useEffect(() => {
     if (auth.currentUser) {
-      firebase.database().ref("users/" + auth.currentUser.uid).on("value", (snapshot) => {
-        setFirstName(snapshot.val().firstName);
-        setLastName(snapshot.val().lastName);
-        console.log(snapshot.val());
-      });
+      firebase
+        .database()
+        .ref("users/" + auth.currentUser.uid)
+        .on("value", (snapshot) => {
+          setFirstName(snapshot.val().firstName);
+          setLastName(snapshot.val().lastName);
+        });
     }
   }, []);
 
@@ -39,20 +84,20 @@ export default function Settings() {
     setLoading(true);
     try {
       await updateProfile(auth.currentUser, {
-        displayName
+        displayName,
       });
       firebase
-      .database()
-      .ref("users/" + auth.currentUser.uid)
-      .update({
-        firstName: firstName,
-        lastName: lastName,
-      });
+        .database()
+        .ref("users/" + auth.currentUser.uid)
+        .update({
+          firstName,
+          lastName,
+        });
       setLoading(false);
       setError("");
     } catch (error) {
       setLoading(false);
-      setError("Failed to update profile information.");
+      setError("Failed to update profile information: invalid input.");
     }
   };
 
@@ -60,7 +105,7 @@ export default function Settings() {
     e.preventDefault();
     setLoading(true);
     try {
-      await updatePassword(password);
+      await updatePassword(auth.currentUser, password);
       setLoading(false);
       setError("");
     } catch (error) {
@@ -70,61 +115,73 @@ export default function Settings() {
   };
 
   return (
-    <div className="settings-container">
-      <Grid container spacing={2} justifyContent="center">
+    <StyledContainer>
+      <Grid container spacing={4} justifyContent="center">
         <Grid item xs={12} md={6}>
-          <Paper className="settings-paper">
-            <Typography variant="h5" component="h2" className="section-title">
+          <StyledPaper>
+            <StyledSectionTitle variant="h5" component="h2">
               Profile Information
-            </Typography>
-            <form className="settings-form" onSubmit={handleUpdateProfile}>
-              <TextField
+            </StyledSectionTitle>
+            <StyledForm onSubmit={handleUpdateProfile}>
+              <StyledTextField
                 id="firstName"
                 label="First Name"
                 variant="outlined"
                 value={firstName}
                 required
                 onChange={(e) => setFirstName(e.target.value)}
-                sx={{ mb: 2 }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                fullWidth
               />
-              <TextField
+              <StyledTextField
                 id="lastName"
                 label="Last Name"
                 variant="outlined"
                 value={lastName}
                 required
                 onChange={(e) => setLastName(e.target.value)}
-                sx={{ mb: 2 }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                fullWidth
               />
-              <TextField
+              <StyledTextField
                 id="displayName"
                 label="Display Name"
                 variant="outlined"
                 value={displayName}
                 required
                 onChange={(e) => setDisplayName(e.target.value)}
-                sx={{ mb: 2 }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                fullWidth
               />
-              <Button
-                className="settings-button"
+              <StyledButton
                 type="submit"
                 variant="contained"
                 color="primary"
                 disabled={loading}
               >
                 {loading ? <CircularProgress size={25} /> : "Update Profile"}
-              </Button>
-              {error && <Typography color="error" className="error-message">{error}</Typography>}
-            </form>
-          </Paper>
+              </StyledButton>
+              {error && (
+                <StyledErrorMessage color="error">
+                  {error}
+                </StyledErrorMessage>
+              )}
+            </StyledForm>
+          </StyledPaper>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Paper className="settings-paper">
-            <Typography variant="h5" component="h2" className="section-title">
+          <StyledPaper>
+            <StyledSectionTitle variant="h5" component="h2">
               Password
-            </Typography>
-            <form className="settings-form" onSubmit={handleUpdatePassword}>
-              <TextField
+            </StyledSectionTitle>
+            <StyledForm onSubmit={handleUpdatePassword}>
+              <StyledTextField
                 id="password"
                 label="New Password"
                 type="password"
@@ -132,22 +189,28 @@ export default function Settings() {
                 value={password}
                 required
                 onChange={(e) => setPassword(e.target.value)}
-                sx={{ mb: 2 }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                fullWidth
               />
-              <Button
-                className="settings-button"
+              <StyledButton
                 type="submit"
                 variant="contained"
                 color="primary"
                 disabled={loading}
               >
                 {loading ? <CircularProgress size={25} /> : "Update Password"}
-              </Button>
-              {error && <Typography color="error" className="error-message">{error}</Typography>}
-            </form>
-          </Paper>
+              </StyledButton>
+              {error && (
+                <StyledErrorMessage color="error">
+                  {error}
+                </StyledErrorMessage>
+              )}
+            </StyledForm>
+          </StyledPaper>
         </Grid>
       </Grid>
-    </div>
+    </StyledContainer>
   );
 }

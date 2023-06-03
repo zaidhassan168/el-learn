@@ -7,6 +7,13 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import { styled } from "@mui/material/styles";
 import SvgBackground from "../assets/abstract.svg";
+import { CustomListItem } from "../utils/ReUseable";
+import {
+  fetchChapters,
+  callDictionaryAPI,
+  callDictionaryExampleAPI,
+  handlePlayAudio,
+} from "../utils/Functions";
 // import WordCard from "./WordCard";
 import { auth } from "../utils/Firebase";
 import firebase from "firebase/compat/app";
@@ -20,9 +27,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
+// import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
-import Speech from "speak-tts";
+// import Speech from "speak-tts";
 
 const HomeContainer = styled(Box)({
   backgroundImage: `url(${SvgBackground})`,
@@ -46,13 +53,7 @@ const HomeDetailsPaper = styled(Paper)(({ theme }) => ({
   backdropFilter: "blur(10px)",
   boxShadow: theme.shadows[10],
 }));
-const CustomListItem = styled(ListItem)(({ theme }) => ({
-  "&:hover": {
-    backgroundColor: "#e0e0e0",
-    transform: "scale(1.10)", // Apply zoom effect
-    transition: "transform 0.3s", // Add transition animation
-  },
-}));
+
 const HomeDetails = () => {
   const [wordCount, setWordCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -69,29 +70,6 @@ const HomeDetails = () => {
   const [apiResponse2, setApiResponse2] = useState(null);
   const [isCalling, setIsCalling] = useState(false);
   const [translatedWord, setTranslatedWord] = useState(null);
-  const speech = new Speech();
-
-  speech
-    .init({
-      volume: 1,
-      lang: "sv-SE",
-      rate: 0.8,
-      pitch: 1,
-      voice: "Alva",
-      splitSentences: true,
-      // listeners: {
-      //   onvoiceschanged: (voices) => {
-      //     console.log("Event voiceschanged", voices);
-      //   },
-      // },
-    })
-    .then((data) => {
-      // The "data" object contains the list of available voices and the voice synthesis params
-      console.log("Speech is ready, voices are available", data);
-    })
-    .catch((e) => {
-      console.error("An error occured while initializing : ", e);
-    });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,21 +84,9 @@ const HomeDetails = () => {
           setWordCount(count);
         }
 
-        const chaptersSnapshot = await firebase
-          .database()
-          .ref("chapters")
-          .once("value");
-        const chaptersData = chaptersSnapshot.val();
-        const chaptersArray = Object.entries(chaptersData).map(
-          ([key, value]) => {
-            return {
-              id: key,
-              name: value.name,
-              words: value.words,
-            };
-          }
-        );
-        setChapters(chaptersArray);
+        fetchChapters().then((chapters) => {
+          setChapters(chapters);
+        });
         setLoading(false);
       } catch (error) {
         setLoading(false);
@@ -162,9 +128,11 @@ const HomeDetails = () => {
     try {
       setIsCalling(true);
       const result = await callDictionaryAPI(word);
-      await callDictionaryExampleAPI(
-        result[0].displaySource,
-        result[0].translations[0].displayTarget
+      setApiResponse2(
+        await callDictionaryExampleAPI(
+          result[0].displaySource,
+          result[0].translations[0].displayTarget
+        )
       );
       // callTextToSpeechAPI(result[0].displaySource);
 
@@ -187,17 +155,18 @@ const HomeDetails = () => {
       try {
         setIsCalling(true);
         const result = await callDictionaryAPI(nextWord);
-        // setApiResponse(result);
+        setApiResponse(result);
 
-        await callDictionaryExampleAPI(
-          result[0].displaySource,
-          result[0].translations[0].displayTarget
+        setApiResponse2(
+          await callDictionaryExampleAPI(
+            result[0].displaySource,
+            result[0].translations[0].displayTarget
+          )
         );
         // callTextToSpeechAPI(result[0].displaySource);
 
         // console.log(result2);
         console.log(apiResponse2[0].examples);
-        // setApiResponse2(result2);
         setIsCalling(false);
         setTranslatedWord(result[0].translations[0].displayTarget);
 
@@ -218,10 +187,14 @@ const HomeDetails = () => {
       try {
         setIsCalling(true);
         const result = await callDictionaryAPI(previousWord);
-        await callDictionaryExampleAPI(
-          result[0].displaySource,
-          result[0].translations[0].displayTarget
+        setApiResponse(result);
+        setApiResponse2(
+          await callDictionaryExampleAPI(
+            result[0].displaySource,
+            result[0].translations[0].displayTarget
+          )
         );
+
         // callTextToSpeechAPI(result[0].displaySource);
 
         setIsCalling(false);
@@ -235,89 +208,6 @@ const HomeDetails = () => {
         console.error(error);
       }
     }
-  };
-
-  const callDictionaryAPI = async (word) => {
-    // const { v4: uuidv4 } = require("uuid");
-
-    let key = "fd71f14f5fb047ee998a71b51665aea3";
-    let endpoint = "https://api.cognitive.microsofttranslator.com";
-    let location = "eastus";
-
-    const url = `${endpoint}/dictionary/lookup?api-version=3.0&from=en&to=sv`;
-
-    const options = {
-      method: "POST",
-      headers: {
-        "Ocp-Apim-Subscription-Key": key,
-        "Ocp-Apim-Subscription-Region": location,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify([
-        {
-          text: word,
-        },
-      ]),
-    };
-
-    try {
-      const response = await fetch(url, options);
-      const data = await response.json();
-      // console.log(data);
-      setApiResponse(data);
-      return data;
-    } catch (error) {
-      throw new Error(error);
-    }
-  };
-
-  const callDictionaryExampleAPI = async (source, target) => {
-    // const { v4: uuidv4 } = require("uuid");
-
-    let key = "fd71f14f5fb047ee998a71b51665aea3";
-    let endpoint = "https://api.cognitive.microsofttranslator.com";
-    let location = "eastus";
-
-    const url = `${endpoint}/dictionary/examples?api-version=3.0&from=en&to=sv`;
-    const options = {
-      method: "POST",
-      headers: {
-        "Ocp-Apim-Subscription-Key": key,
-        "Ocp-Apim-Subscription-Region": location,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify([
-        {
-          text: source,
-          translation: target,
-        },
-      ]),
-    };
-
-    try {
-      const response = await fetch(url, options);
-      const data = await response.json();
-      // console.log(data);
-      setApiResponse2(data);
-      return data;
-    } catch (error) {
-      throw new Error(error);
-    }
-  };
-
-  const handlePlayAudio = async (word) => {
-    console.log(word);
-
-    speech
-      .speak({
-        text: word,
-      })
-      .then(() => {
-        console.log("Success !");
-      })
-      .catch((e) => {
-        console.error("An error occurred :", e);
-      });
   };
 
   const handleCloseDialog = () => {

@@ -35,7 +35,7 @@ import "firebase/compat/database";
 import History from "../components/History";
 import HomeDetails from "../components/HomeDetails";
 import ChaptersList from "../components/ChaptersList";
-
+import {initializeSpeech} from "../utils/Functions";
 // import storeWords from "../utils/StoreWords";
 
 const drawerWidth = 240;
@@ -121,6 +121,7 @@ export default function Home() {
     if (user && user.displayName) {
       setDisplayName(user.displayName);
     }
+    initializeSpeech();
     console.log(user);
   }, []);
 

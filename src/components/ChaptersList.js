@@ -12,20 +12,29 @@ import {
   Radio,
   Button,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { shuffle } from "../utils/Funtions";
+// import { styled } from "@mui/material/styles";
+import {
+  shuffle,
+  fetchChapters,
+  getTranslation,
+  initializeSpeech,
+  handlePlayAudio,
+} from "../utils/Functions";
+import { CustomListItem } from "../utils/ReUseable";
 import SvgBackground from "../assets/abstract.svg";
-import firebase from "firebase/compat/app";
+// import firebase from "firebase/compat/app";
 import "firebase/compat/database";
 // import { auth } from "../utils/Firebase";
 import Lottie from "lottie-react";
 import wrong from "../assets/animations/wrong.json";
 import correct from "../assets/animations/correct.json";
-import Speech from "speak-tts";
+// import Speech from "speak-tts";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import IconButton from "@mui/material/IconButton";
-import ListItem from "@mui/material/ListItem";
+// import ListItem from "@mui/material/ListItem";
 import waiting from "../assets/animations/waiting-pigeon.json";
+
+
 const ChaptersList = () => {
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -34,98 +43,32 @@ const ChaptersList = () => {
   const [selectedChoice, setSelectedChoice] = useState("");
   const [error, setError] = useState("");
   const [chapters, setChapters] = useState([]);
-  const speech = new Speech();
+  // const speech = new Speech();
   const [answer, setAnswer] = useState(null);
   // const [currentUser, setCurrentUser] = useState(null);
   // const user = firebase.auth().currentUser;
   // const uid = user.uid;
   // const dbRef = firebase.database().ref("progress").child(uid);
   useEffect(() => {
-    const fetchChapters = async () => {
-      try {
-        const databaseRef = firebase.database().ref("chapters");
-        const snapshot = await databaseRef.once("value");
-        const chaptersData = snapshot.val();
-
-        if (chaptersData) {
-          const chaptersArray = Object.keys(chaptersData).map((key) => ({
-            id: key,
-            title: key,
-            words: chaptersData[key].words || [],
-          }));
-
-          setChapters(chaptersArray);
-        }
-      } catch (error) {
-        console.error("Failed to fetch chapters:", error);
-      }
-    };
-
-    fetchChapters();
+    fetchChapters().then((chaptersArray) => {
+      console.log(chaptersArray);
+      setChapters(chaptersArray);
+    });
   }, []);
 
   useEffect(() => {
-    const getTranslation = async (word) => {
-      let key = "fd71f14f5fb047ee998a71b51665aea3";
-      let endpoint = "https://api.cognitive.microsofttranslator.com";
-      let location = "eastus";
-
-      const url = `${endpoint}/translate?api-version=3.0&from=en&to=sv`;
-
-      const options = {
-        method: "POST",
-        headers: {
-          "Ocp-Apim-Subscription-Key": key,
-          "Ocp-Apim-Subscription-Region": location,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify([
-          {
-            text: word,
-          },
-        ]),
-      };
-
-      try {
-        const response = await fetch(url, options);
-        const data = await response.json();
-        console.log(data[0].translations[0].text);
-        setTranslation(data[0].translations[0].text);
-        return data;
-      } catch (error) {
-        throw new Error(error);
-      }
-    };
-
     if (selectedChapter) {
       const word = selectedChapter.words[currentWordIndex];
-      getTranslation(word);
+      getTranslation(word).then((data) => {
+        // console.log(data);
+        setTranslation(data);
+      });
     }
   }, [selectedChapter, currentWordIndex]);
 
-  useEffect(() => {
-    speech
-      .init({
-        volume: 1,
-        lang: "sv-SE",
-        rate: 0.8,
-        pitch: 1,
-        voice: "Alva",
-        splitSentences: true,
-        // listeners: {
-        //   onvoiceschanged: (voices) => {
-        //     console.log("Event voiceschanged", voices);
-        //   },
-        // },
-      })
-      .then((data) => {
-        // The "data" object contains the list of available voices and the voice synthesis params
-        console.log("Speech is ready, voices are available", data);
-      })
-      .catch((e) => {
-        console.error("An error occured while initializing : ", e);
-      });
-  });
+  // useEffect(() => {
+  //   initializeSpeech();
+  // });
   // useEffect(() => {
   //   auth.onAuthStateChanged((user) => {
   //     console.log(user);
@@ -154,28 +97,21 @@ const ChaptersList = () => {
     }
   }, [chapters, selectedChapter, translation]);
 
-  const handlePlayAudio = async (word) => {
-    console.log(word);
+  // const handlePlayAudio = async (word) => {
+  //   console.log(word);
 
-    speech
-      .speak({
-        text: translation,
-      })
-      .then(() => {
-        console.log("Success !");
-      })
-      .catch((e) => {
-        console.error("An error occurred :", e);
-      });
-  };
+  //   speech
+  //     .speak({
+  //       text: translation,
+  //     })
+  //     .then(() => {
+  //       console.log("Success !");
+  //     })
+  //     .catch((e) => {
+  //       console.error("An error occurred :", e);
+  //     });
+  // };
 
-  const CustomListItem = styled(ListItem)(({ theme }) => ({
-    "&:hover": {
-      backgroundColor: "#e0e0e0",
-      transform: "scale(1.10)", // Apply zoom effect
-      transition: "transform 0.3s", // Add transition animation
-    },
-  }));
   const handleClickChapter = (chapter) => {
     setSelectedChapter(chapter);
     setCurrentWordIndex(0);
@@ -319,9 +255,7 @@ const ChaptersList = () => {
               </Typography>
               <IconButton
                 color="success"
-                onClick={() =>
-                  handlePlayAudio(selectedChapter.words[currentWordIndex])
-                }
+                onClick={() => handlePlayAudio(translation)}
               >
                 <VolumeUpIcon />
               </IconButton>
