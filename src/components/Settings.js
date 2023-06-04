@@ -86,6 +86,9 @@ export default function Settings() {
       await updateProfile(auth.currentUser, {
         displayName,
       });
+      let user = localStorage.getItem("user");
+      user = JSON.parse(user);
+      user.displayName = displayName;
       firebase
         .database()
         .ref("users/" + auth.currentUser.uid)

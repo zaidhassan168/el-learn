@@ -21,7 +21,7 @@ import RestoreRoundedIcon from "@mui/icons-material/RestoreRounded";
 import LocalLibraryRoundedIcon from "@mui/icons-material/LocalLibraryRounded";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import AppSettingsAltRoundedIcon from "@mui/icons-material/AppSettingsAltRounded";
-
+import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import { auth } from "../utils/Firebase";
 import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
@@ -30,8 +30,11 @@ import { deepPurple } from "@mui/material/colors";
 import { useState, useEffect } from "react";
 import WordCard from "../components/WordCard";
 import Settings from "../components/Settings";
-// import firebase from "firebase/compat/app";
-import "firebase/compat/database";
+import LanguageSelector from "../utils/LanguageSelector";
+// import {  FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+
+import firebase from "firebase/compat/app";
+// import "firebase/compat/database";
 import History from "../components/History";
 import HomeDetails from "../components/HomeDetails";
 import ChaptersList from "../components/ChaptersList";
@@ -111,19 +114,36 @@ export default function Home() {
   const [open, setOpen] = React.useState(false);
   const [selectedItem, setSelectedItem] = useState("home"); // set initial value to "home"
   const [displayName, setDisplayName] = useState("");
+  const [nameIntials, setNameIntials] = useState(""); // set initial value to "home"
+  const [targetLanguage, setTargetLanguage] = useState("");
+
 
   useEffect(() => {
     // const user = firebase.auth().currentUser;
     // if (user && user.displayName) {
     //   setDisplayName(user.displayName);
     // }
+
     const user = JSON.parse(localStorage.getItem("user"));
     if (user && user.displayName) {
       setDisplayName(user.displayName);
     }
-    initializeSpeech();
+    const dbRef = firebase.database().ref("users/" + user.uid);
+    dbRef.child("selectedLanguage").on("value", (snapshot) => {
+      const selectedLanguage = snapshot.val() || "";
+      setTargetLanguage(selectedLanguage);
+    });
+    initializeSpeech( targetLanguage);
     console.log(user);
-  }, []);
+    if (user && user.displayName) {
+      const initials = user.displayName
+        .split(" ")
+        .map((name) => name[0])
+        .join("");
+
+      setNameIntials(initials);
+    }
+  }, [targetLanguage]);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -189,7 +209,7 @@ export default function Home() {
           <IconButton
             color="inherit"
             aria-label="open drawer"
-            onMouseEnter={handleDrawerOpen}
+            onClick={handleDrawerOpen}
             edge="start"
             sx={{
               marginRight: 5,
@@ -201,16 +221,22 @@ export default function Home() {
           <Typography variant="h6" noWrap component="div">
             e-Learn
           </Typography>
+
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+          <LanguageSelector />
           <Button color="inherit" onClick={handleLogout}>
             Logout
           </Button>
+
+
+          </Box>
         </Toolbar>
       </AppBar>
       <Drawer
         variant="permanent"
         open={open}
-        onMouseLeave={handleDrawerClose}
-        onMouseOver={handleDrawerOpen}
+        // onMouseLeave={handleDrawerClose}
+        // onMouseOver={handleDrawerOpen}
 
       >
         <DrawerHeader>
@@ -224,29 +250,38 @@ export default function Home() {
         </DrawerHeader>
         <Divider />
         <ListItem sx={{ display: "flex", justifyContent: "center" }}>
-          <Avatar sx={{ bgcolor: deepPurple[500] }}>AT</Avatar>
+          <Avatar sx={{ bgcolor: deepPurple[500]}}>
+            {nameIntials}
+          </Avatar>
         </ListItem>
-        <ListItem sx={{ display: "flex", justifyContent: "center" }}>
+        {open && (
+
+        // <Divider />
+        <ListItem sx={{ display: "flex", justifyContent: "center", alignItems:"center" }}>
+          <PersonRoundedIcon sx={{color: "#1769aa", marginRight: "20px", marginLeft:"5px" }}>
+          </PersonRoundedIcon>
           <ListItemText primary={displayName} />
         </ListItem>
+        )}
         <Divider />
         <List>
           {[
-            { label: "Home", icon: <HomeRoundedIcon />, item: "home" },
+            { label: "Home", icon: <HomeRoundedIcon sx={{color: "#1769aa"}}></HomeRoundedIcon>, item: "home" },
             {
               label: "Learn",
-              icon: <LocalLibraryRoundedIcon />,
+              icon: <LocalLibraryRoundedIcon sx={{color: "#1769aa"}}></LocalLibraryRoundedIcon>,
               item: "learn",
             },
             {
               label: "Chapter Word Details",
-              icon: <ImportContactsRoundedIcon/>,
+              icon: <ImportContactsRoundedIcon sx={{color: "#1769aa"}}></ImportContactsRoundedIcon>,
               item: "chaptersList",
             },
-            { label: "History", icon: <RestoreRoundedIcon />, item: "history" },
+            { label: "History", icon: <RestoreRoundedIcon  sx={{color: "#1769aa"}}>
+            </RestoreRoundedIcon>, item: "history" },
             {
               label: "Settings",
-              icon: <AppSettingsAltRoundedIcon color="blue">
+              icon: <AppSettingsAltRoundedIcon sx={{color: "#1769aa"}}>
                 </AppSettingsAltRoundedIcon>,
               item: "settings",
             },

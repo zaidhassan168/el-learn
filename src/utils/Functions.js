@@ -1,5 +1,9 @@
+
 import firebase from "firebase/compat/app";
 import Speech from "speak-tts";
+import { auth } from "../utils/Firebase";
+
+
 // import { SpeechSynthesizer, SpeechConfig,  SpeechSynthesisOutputFormat, AudioConfig } from 'microsoft-cognitiveservices-speech-sdk';
 
 // function  playAudio  (text)  {
@@ -53,18 +57,50 @@ import Speech from "speak-tts";
 // };
 
 // export { playAudio };
+let languageCode;
+
+// var targetLanguage = '';
 const speech = new Speech();
-function initializeSpeech() {
+function initializeSpeech(language) {
   // if (speech.hasBrowserSupport()) {
   //   // returns a boolean
   //   console.log("speech synthesis supported");
   // }
+  let voice = "";
+  let lang = "";
+  switch (language) {
+    case 'Swedish':
+      voice = 'Alva';
+      lang = 'sv-SE';
+      break;
+    case 'Spanish':
+      voice = 'Alvaro';
+      lang = 'es-ES';
+      break;
+    case 'French':
+      voice = 'Antoine';
+      lang = 'fr-FR';
+      break;
+    case 'German':
+      voice = 'Katja';
+      lang = 'de-DE';
+      break;
+    case 'Italian':
+      voice = 'Cosimo';
+      lang = 'it-IT';
+      break;
+    default:
+      // Set a default language code or handle the case when selectedLanguage is not recognized
+      voice = 'Alva';
+      lang = 'sv-SE';
+  }
+
   speech.init({
     'volume': 1,
-       'lang': 'sv-SE',
+       'lang': lang,
        'rate': 1,
        'pitch': 1,
-       'voice':'Alva',
+       'voice': voice,
        'splitSentences': true,
        'listeners': {
            'onvoiceschanged': (voices) => {
@@ -129,15 +165,60 @@ const fetchChapters = async () => {
 
 export { fetchChapters };
 
+
+const getSelectedLanguage = () => {
+  return new Promise((resolve, reject) => {
+    const userId = auth.currentUser.uid;
+    const userRef = firebase.database().ref('users/' + userId);
+    userRef.child('selectedLanguage').once('value', (snapshot) => {
+      const selectedLanguage = snapshot.val() || '';
+      // targetLanguage = selectedLanguage;
+      resolve(selectedLanguage);
+    }, (error) => {
+      reject(error);
+    });
+  });
+};
+
+export default getSelectedLanguage;
+
+const setLanguageCode = (language) => {
+  switch (language) {
+    case 'English':
+      languageCode = 'en';
+      break;
+    case 'Spanish':
+      languageCode = 'es';
+      break;
+    case 'French':
+      languageCode = 'fr';
+      break;
+    case 'German':
+      languageCode = 'de';
+      break;
+    case 'Italian':
+      languageCode = 'it';
+      break;
+    default:
+      // Set a default language code or handle the case when selectedLanguage is not recognized
+      languageCode = '';
+  }
+};
+
+export { setLanguageCode };
+
 // calling apis
 
 const getTranslation = async (word) => {
   let key = "fd71f14f5fb047ee998a71b51665aea3";
   let endpoint = "https://api.cognitive.microsofttranslator.com";
   let location = "eastus";
-
-  const url = `${endpoint}/translate?api-version=3.0&from=en&to=sv`;
-
+  console.log("languageCode", languageCode);
+  if (languageCode === undefined || languageCode === ""|| languageCode === null) {
+    languageCode = "sv";
+  }
+  // const url = `${endpoint}/translate?api-version=3.0&from=en&to=sv`;
+  const url = `${endpoint}/translate?api-version=3.0&from=en&to=${languageCode}`;
   const options = {
     method: "POST",
     headers: {

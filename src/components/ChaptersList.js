@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Box,
   List,
@@ -17,7 +17,6 @@ import {
   shuffle,
   fetchChapters,
   getTranslation,
-  initializeSpeech,
   handlePlayAudio,
 } from "../utils/Functions";
 import { CustomListItem } from "../utils/ReUseable";
@@ -33,9 +32,16 @@ import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import IconButton from "@mui/material/IconButton";
 // import ListItem from "@mui/material/ListItem";
 import waiting from "../assets/animations/waiting-pigeon.json";
-
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import Slide from "@mui/material/Slide";
+import LinearProgress, {
+  linearProgressClasses,
+} from "@mui/material/LinearProgress";
 
 const ChaptersList = () => {
+  const [isListOpen, setIsListOpen] = useState(true);
+
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [translation, setTranslation] = useState("");
@@ -45,6 +51,8 @@ const ChaptersList = () => {
   const [chapters, setChapters] = useState([]);
   // const speech = new Speech();
   const [answer, setAnswer] = useState(null);
+  const containerRef = useRef(null);
+
   // const [currentUser, setCurrentUser] = useState(null);
   // const user = firebase.auth().currentUser;
   // const uid = user.uid;
@@ -65,22 +73,6 @@ const ChaptersList = () => {
       });
     }
   }, [selectedChapter, currentWordIndex]);
-
-  // useEffect(() => {
-  //   initializeSpeech();
-  // });
-  // useEffect(() => {
-  //   auth.onAuthStateChanged((user) => {
-  //     console.log(user);
-  //     if (user) {
-  //       const databaseRef = firebase
-  //         .database()
-  //         .ref("Progress")
-  //         .child(uid)
-  //       setDbRef(databaseRef);
-  //     }
-  //   });
-  // });
   useEffect(() => {
     if (translation) {
       const choices = [translation];
@@ -97,20 +89,9 @@ const ChaptersList = () => {
     }
   }, [chapters, selectedChapter, translation]);
 
-  // const handlePlayAudio = async (word) => {
-  //   console.log(word);
-
-  //   speech
-  //     .speak({
-  //       text: translation,
-  //     })
-  //     .then(() => {
-  //       console.log("Success !");
-  //     })
-  //     .catch((e) => {
-  //       console.error("An error occurred :", e);
-  //     });
-  // };
+  const toggleList = () => {
+    setIsListOpen((prevState) => !prevState);
+  };
 
   const handleClickChapter = (chapter) => {
     setSelectedChapter(chapter);
@@ -178,48 +159,81 @@ const ChaptersList = () => {
         backgroundImage: `url(${SvgBackground})`,
         backgroundSize: "auto",
       }}
+      ref={containerRef}
     >
-      <List
-        sx={{
-          width: "30%",
-          marginRight: "20px",
-          maxHeight: "100vh",
-          overflowY: "auto",
-          backgroundColor: "rgba(255, 255, 255, 0.8)",
-          borderRadius: "10px",
-          boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
-        }}
-      >
-        {chapters.map((chapter) => (
-          <CustomListItem
-            key={chapter.id}
-            button
-            onClick={() => handleClickChapter(chapter)}
-            sx={{
-              backgroundColor:
-                selectedChapter?.id === chapter.id ? "#e0e0e0" : "transparent",
-              borderRadius: "10px",
-              margin: "8px",
-              paddingTop: "5px",
-              paddingBottom: "5px",
-              boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-              transition: "all 0.3s ease-in-out",
-              "&:hover": {
-                transform: "scale(1.05)",
-                boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.2)",
-              },
-            }}
+      {isListOpen && (
+        <Box
+          sx={{
+            // position: "fixed",
+            top: "0",
+            // left: isListOpen ? "0" : "-30%",
+            zIndex: "1",
+            width: "20%",
+            p: 1.5,
+            maxHeight: "100vh",
+            overflowY: "auto",
+            backgroundColor: "rgba(255, 255, 255, 0.8)",
+            borderRadius: "10px",
+            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
+            transition: "left 0.3s ease-in-out",
+          }}
+        >
+          <Slide
+            direction="right"
+            in={isListOpen}
+            timeout={1000}
+            container={containerRef.current}
           >
-            <ListItemText
-              primary={chapter.id}
-              sx={{
-                color: "#1769aa",
-                ml: 2,
-              }}
-            />
-          </CustomListItem>
-        ))}
-      </List>
+            <List>
+              {chapters.map((chapter) => (
+                  <CustomListItem
+                    key={chapter.id}
+                    button
+                    onClick={() => handleClickChapter(chapter)}
+                    sx={{
+                      backgroundColor:
+                        selectedChapter?.id === chapter.id
+                          ? "#e0e0e0"
+                          : "transparent",
+                      borderRadius: "10px",
+                      margin: "8px",
+                      paddingTop: "5px",
+                      paddingBottom: "5px",
+                      boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+                      transition: "all 0.3s ease-in-out",
+                      "&:hover": {
+                        transform: "scale(1.05)",
+                        boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.2)",
+                      },
+                    }}
+                  >
+                    <Slide direction="right" in={isListOpen} timeout={2000}>
+                      <ListItemText
+                        primary={chapter.id}
+                        sx={{
+                          color: "#1769aa",
+                          ml: 2,
+                        }}
+                      />
+                    </Slide>
+                  </CustomListItem>
+              ))}
+            </List>
+          </Slide>
+        </Box>
+      )}
+      <IconButton
+        sx={{
+          position: "relative",
+          top: "50%",
+          zIndex: "1",
+          transform: "translateY(-50%)",
+          transition: "left 0.3s ease-in-out",
+        }}
+        onClick={toggleList}
+      >
+        {isListOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+      </IconButton>
       {selectedChapter && (
         <Box
           sx={{
@@ -231,6 +245,33 @@ const ChaptersList = () => {
             animation: "fadeIn 1s ease-in-out",
           }}
         >
+          <Box
+  sx={{
+    width: "50%",
+    marginBottom: "20px",
+    backgroundColor: "transparent",
+    boxShadow: "none",
+  }}
+>
+  <LinearProgress
+    variant="determinate"
+    value={((currentWordIndex + 1) / selectedChapter.words.length) * 100}
+    sx={{
+      height: "10px",
+      borderRadius: "5px",
+      backgroundColor: "rgba(0, 0, 0, 0.1)",
+      "& .MuiLinearProgress-bar": {
+        backgroundColor: "#1769aa",
+      },
+    }}
+  />
+</Box>
+
+          <Typography variant="body1" sx={{ textAlign: "center", mb: "10px" }}>
+            Words Learned: {currentWordIndex + 1} /{" "}
+            {selectedChapter.words.length}
+          </Typography>
+
           <Card
             sx={{
               mb: 2,
@@ -257,7 +298,9 @@ const ChaptersList = () => {
                 color="success"
                 onClick={() => handlePlayAudio(translation)}
               >
-                <VolumeUpIcon />
+                <VolumeUpIcon sx={{color: "#1769aa"}} ></VolumeUpIcon>
+
+
               </IconButton>
             </CardContent>
           </Card>
@@ -301,7 +344,9 @@ const ChaptersList = () => {
             <Button
               variant="contained"
               onClick={handleNextWord}
-              disabled={currentWordIndex === selectedChapter.words.length - 1}
+              disabled={
+                currentWordIndex === selectedChapter.words.length - 1 || !answer
+              }
               sx={{ marginLeft: "10px" }}
             >
               Next Word

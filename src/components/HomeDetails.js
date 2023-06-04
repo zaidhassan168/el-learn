@@ -264,51 +264,40 @@ const HomeDetails = () => {
                         </Typography>
                         <Box
                           sx={{
-                            width: "350px",
+                            width: "100%",
                             mt: 2,
                             mb: isMobileView ? 4 : 0,
-                            maxHeight: "300px", // Set a max height to enable scrolling
-                            overflowY: "auto",
+                            display: "grid",
+                            gridTemplateColumns:
+                              "repeat(auto-fit, minmax(120px, 1fr))",
+                            gridGap: "15px",
                             paddingRight: "20px",
                           }}
                         >
-                          <List
-                            sx={{
-                              width: "100%",
-                              padding: "20px",
-                            }}
-                          >
-                            {chapters.map((chapter) => (
-                              <CustomListItem
-                                key={chapter.id}
-                                button
-                                onClick={() => handleChapterClick(chapter)}
-                                sx={{
-                                  backgroundColor:
-                                    selectedChapter?.id === chapter.id
-                                      ? "#e0e0e0"
-                                      : "transparent",
-                                  borderRadius: "10px",
-                                  margin: "15px",
-                                  padding: "15px",
-                                  boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-                                  transition: "all 0.3s ease-in-out",
-                                  "&:hover": {
-                                    transform: "scale(1.05)",
-                                    boxShadow:
-                                      "0px 0px 20px rgba(0, 0, 0, 0.2)",
-                                  },
-                                }}
-                              >
-                                <ListItemText
-                                  primary={chapter.id}
-                                  sx={{
-                                    ml: 2,
-                                  }}
-                                />
-                              </CustomListItem>
-                            ))}
-                          </List>
+                          {chapters.map((chapter) => (
+                            <Button
+                              key={chapter.id}
+                              variant="contained"
+                              color={
+                                selectedChapter?.id === chapter.id
+                                  ? "secondary"
+                                  : "primary"
+                              }
+                              size="large"
+                              onClick={() => handleChapterClick(chapter)}
+                              sx={{
+                                borderRadius: "10px",
+                                boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+                                transition: "all 0.3s ease-in-out",
+                                "&:hover": {
+                                  transform: "scale(1.05)",
+                                  boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.2)",
+                                },
+                              }}
+                            >
+                              {chapter.id}
+                            </Button>
+                          ))}
                         </Box>
                       </Box>
                     </Fade>
