@@ -180,7 +180,7 @@ const getSelectedLanguage = () => {
   });
 };
 
-export default getSelectedLanguage;
+export {getSelectedLanguage};
 
 const setLanguageCode = (language) => {
   switch (language) {
@@ -253,7 +253,7 @@ const callDictionaryAPI = async (word) => {
   let endpoint = "https://api.cognitive.microsofttranslator.com";
   let location = "eastus";
 
-  const url = `${endpoint}/dictionary/lookup?api-version=3.0&from=en&to=sv`;
+  const url = `${endpoint}/dictionary/lookup?api-version=3.0&from=en&to=${languageCode}`;
 
   const options = {
     method: "POST",
@@ -288,7 +288,7 @@ const callDictionaryExampleAPI = async (source, target) => {
   let endpoint = "https://api.cognitive.microsofttranslator.com";
   let location = "eastus";
 
-  const url = `${endpoint}/dictionary/examples?api-version=3.0&from=en&to=sv`;
+  const url = `${endpoint}/dictionary/examples?api-version=3.0&from=en&to=${languageCode}`;
   const options = {
     method: "POST",
     headers: {

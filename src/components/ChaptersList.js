@@ -35,9 +35,7 @@ import waiting from "../assets/animations/waiting-pigeon.json";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Slide from "@mui/material/Slide";
-import LinearProgress, {
-  linearProgressClasses,
-} from "@mui/material/LinearProgress";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const ChaptersList = () => {
   const [isListOpen, setIsListOpen] = useState(true);
@@ -186,37 +184,37 @@ const ChaptersList = () => {
           >
             <List>
               {chapters.map((chapter) => (
-                  <CustomListItem
-                    key={chapter.id}
-                    button
-                    onClick={() => handleClickChapter(chapter)}
-                    sx={{
-                      backgroundColor:
-                        selectedChapter?.id === chapter.id
-                          ? "#e0e0e0"
-                          : "transparent",
-                      borderRadius: "10px",
-                      margin: "8px",
-                      paddingTop: "5px",
-                      paddingBottom: "5px",
-                      boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-                      transition: "all 0.3s ease-in-out",
-                      "&:hover": {
-                        transform: "scale(1.05)",
-                        boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.2)",
-                      },
-                    }}
-                  >
-                    <Slide direction="right" in={isListOpen} timeout={2000}>
-                      <ListItemText
-                        primary={chapter.id}
-                        sx={{
-                          color: "#1769aa",
-                          ml: 2,
-                        }}
-                      />
-                    </Slide>
-                  </CustomListItem>
+                <CustomListItem
+                  key={chapter.id}
+                  button
+                  onClick={() => handleClickChapter(chapter)}
+                  sx={{
+                    backgroundColor:
+                      selectedChapter?.id === chapter.id
+                        ? "#e0e0e0"
+                        : "transparent",
+                    borderRadius: "10px",
+                    margin: "8px",
+                    paddingTop: "5px",
+                    paddingBottom: "5px",
+                    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+                    transition: "all 0.3s ease-in-out",
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                      boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.2)",
+                    },
+                  }}
+                >
+                  <Slide direction="right" in={isListOpen} timeout={2000}>
+                    <ListItemText
+                      primary={chapter.id}
+                      sx={{
+                        color: "#1769aa",
+                        ml: 2,
+                      }}
+                    />
+                  </Slide>
+                </CustomListItem>
               ))}
             </List>
           </Slide>
@@ -246,26 +244,28 @@ const ChaptersList = () => {
           }}
         >
           <Box
-  sx={{
-    width: "50%",
-    marginBottom: "20px",
-    backgroundColor: "transparent",
-    boxShadow: "none",
-  }}
->
-  <LinearProgress
-    variant="determinate"
-    value={((currentWordIndex + 1) / selectedChapter.words.length) * 100}
-    sx={{
-      height: "10px",
-      borderRadius: "5px",
-      backgroundColor: "rgba(0, 0, 0, 0.1)",
-      "& .MuiLinearProgress-bar": {
-        backgroundColor: "#1769aa",
-      },
-    }}
-  />
-</Box>
+            sx={{
+              width: "50%",
+              marginBottom: "20px",
+              backgroundColor: "transparent",
+              boxShadow: "none",
+            }}
+          >
+            <LinearProgress
+              variant="determinate"
+              value={
+                ((currentWordIndex + 1) / selectedChapter.words.length) * 100
+              }
+              sx={{
+                height: "10px",
+                borderRadius: "5px",
+                backgroundColor: "rgba(0, 0, 0, 0.1)",
+                "& .MuiLinearProgress-bar": {
+                  backgroundColor: "#1769aa",
+                },
+              }}
+            />
+          </Box>
 
           <Typography variant="body1" sx={{ textAlign: "center", mb: "10px" }}>
             Words Learned: {currentWordIndex + 1} /{" "}
@@ -298,9 +298,7 @@ const ChaptersList = () => {
                 color="success"
                 onClick={() => handlePlayAudio(translation)}
               >
-                <VolumeUpIcon sx={{color: "#1769aa"}} ></VolumeUpIcon>
-
-
+                <VolumeUpIcon sx={{ color: "#1769aa" }}></VolumeUpIcon>
               </IconButton>
             </CardContent>
           </Card>

@@ -7,12 +7,13 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import { styled } from "@mui/material/styles";
 import SvgBackground from "../assets/abstract.svg";
-import { CustomListItem } from "../utils/ReUseable";
+// import { CustomListItem } from "../utils/ReUseable";
 import {
   fetchChapters,
   callDictionaryAPI,
   callDictionaryExampleAPI,
   handlePlayAudio,
+  getSelectedLanguage,
 } from "../utils/Functions";
 // import WordCard from "./WordCard";
 import { auth } from "../utils/Firebase";
@@ -26,9 +27,9 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import List from "@mui/material/List";
-// import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
+// import List from "@mui/material/List";
+// // import ListItem from "@mui/material/ListItem";
+// import ListItemText from "@mui/material/ListItemText";
 // import Speech from "speak-tts";
 
 const HomeContainer = styled(Box)({
@@ -49,7 +50,7 @@ const HomeDetailsPaper = styled(Paper)(({ theme }) => ({
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  backgroundColor: "rgba(255, 255, 255, 0.8)",
+  backgroundColor: "transparent",
   backdropFilter: "blur(10px)",
   boxShadow: theme.shadows[10],
 }));
@@ -58,7 +59,6 @@ const HomeDetails = () => {
   const [wordCount, setWordCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  // const [learningStarted, setLearningStarted] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [selectedWord, setSelectedWord] = useState(null);
@@ -70,6 +70,7 @@ const HomeDetails = () => {
   const [apiResponse2, setApiResponse2] = useState(null);
   const [isCalling, setIsCalling] = useState(false);
   const [translatedWord, setTranslatedWord] = useState(null);
+  const [selectedLanguage, setSelectedLanguage] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,10 +94,17 @@ const HomeDetails = () => {
         console.log(error);
         setError("Failed to fetch data.");
       }
+      // setSelectedLanguage(await getSelectedLanguage());
+      // console.log(selectedLanguage, "this ur selected language");
     };
 
     fetchData();
-  }, []);
+  }, [selectedLanguage]);
+
+
+
+
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -214,6 +222,26 @@ const HomeDetails = () => {
     setShowWordDialog(false);
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let lang = getSelectedLanguage().then((lang) => {
+          setSelectedLanguage(lang);
+        }
+        );
+        setSelectedLanguage(lang);
+      } catch (error) {
+        setLoading(false);
+        console.log(error);
+        setError("Failed to fetch data.");
+      }
+      setSelectedLanguage(await getSelectedLanguage());
+      // console.log(selectedLanguage, "this ur selected language");
+    };
+
+    fetchData();
+  }, [ dialogWordIndex]);
+
   return (
     <HomeContainer>
       <HomeDetailsContainer
@@ -227,9 +255,16 @@ const HomeDetails = () => {
               <Typography variant="h4" component="h2">
                 Welcome, {auth.currentUser && auth.currentUser.displayName}!
               </Typography>
-              <Typography variant="h6" component="p" sx={{ mt: 2 }}>
-                You have learned {wordCount} words.
-              </Typography>
+              {wordCount === 0 ? (
+                <Typography variant="h6" component="p" sx={{ mt: 2 }}>
+                  You have not started your journey!
+                </Typography>
+              ) : (
+                <Typography variant="h6" component="p" sx={{ mt: 2 }}>
+                  You have learned {wordCount} words.
+                </Typography>
+              )}
+
               {loading ? (
                 <Box sx={{ mt: 4 }}>
                   <CircularProgress />
@@ -244,13 +279,13 @@ const HomeDetails = () => {
                   {!showWordList ? (
                     // Chapter list section
                     <Fade in={!showWordList}>
-                      <Box sx={{ mt: 5, mb: 5 }}>
+                      <Box sx={{ mt: 2, mb: 3 }}>
                         <Typography
                           variant="h6"
                           component="p"
                           sx={{
-                            mt: 4,
-                            mb: 10,
+                            mt: 3,
+                            mb: 4,
                             color: "#757575",
                             animation: "zoom 2s infinite",
                             "@keyframes zoom": {
@@ -264,10 +299,9 @@ const HomeDetails = () => {
                         </Typography>
                         <Box
                           sx={{
-                            width: "100%",
-                            mt: 2,
+                            // width: "100%",
                             mb: isMobileView ? 4 : 0,
-                            display: "grid",
+                            // display: "flex",
                             gridTemplateColumns:
                               "repeat(auto-fit, minmax(120px, 1fr))",
                             gridGap: "15px",
@@ -277,8 +311,8 @@ const HomeDetails = () => {
                           {chapters.map((chapter) => (
                             <Button
                               key={chapter.id}
-                              variant="contained"
-                              color={
+                              variant="outlined"
+                               color={
                                 selectedChapter?.id === chapter.id
                                   ? "secondary"
                                   : "primary"
@@ -293,6 +327,7 @@ const HomeDetails = () => {
                                   transform: "scale(1.05)",
                                   boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.2)",
                                 },
+                                m: 1,
                               }}
                             >
                               {chapter.id}
@@ -393,7 +428,7 @@ const HomeDetails = () => {
                       <strong>English:</strong> {apiResponse[0].displaySource}
                     </p>
                     <p>
-                      <strong>Swedish:</strong>{" "}
+                      <strong>{selectedLanguage}:</strong>{" "}
                       {apiResponse[0].translations[0].displayTarget}
                     </p>
                     <p>
@@ -412,7 +447,7 @@ const HomeDetails = () => {
                           {example.sourceTerm} {example.sourceSuffix}
                         </p>
                         <p>
-                          <strong>Swedish:</strong> {example.targetPrefix}
+                          <strong>{selectedLanguage}:</strong> {example.targetPrefix}
                           {example.targetTerm} {example.targetSuffix}
                         </p>
                       </div>
