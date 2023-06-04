@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, forwardRef } from "react";
 import {
   Box,
   List,
@@ -19,6 +19,7 @@ import {
   getTranslation,
   handlePlayAudio,
 } from "../utils/Functions";
+import Grid from '@mui/material/Grid'; // Grid version 1
 import { CustomListItem } from "../utils/ReUseable";
 import SvgBackground from "../assets/abstract.svg";
 // import firebase from "firebase/compat/app";
@@ -34,11 +35,22 @@ import IconButton from "@mui/material/IconButton";
 import waiting from "../assets/animations/waiting-pigeon.json";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Slide from "@mui/material/Slide";
+import Fade from "@mui/material/Fade";
+
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
 import LinearProgress from "@mui/material/LinearProgress";
+import Tooltip from "@mui/material/Tooltip";
+
+import WordDetails from "./WordDetails";
 
 const ChaptersList = () => {
   const [isListOpen, setIsListOpen] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedWord, setSelectedWord] = useState("");
 
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -55,6 +67,11 @@ const ChaptersList = () => {
   // const user = firebase.auth().currentUser;
   // const uid = user.uid;
   // const dbRef = firebase.database().ref("progress").child(uid);
+
+  const dialogTransition = forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
+
   useEffect(() => {
     fetchChapters().then((chaptersArray) => {
       console.log(chaptersArray);
@@ -71,6 +88,7 @@ const ChaptersList = () => {
       });
     }
   }, [selectedChapter, currentWordIndex]);
+
   useEffect(() => {
     if (translation) {
       const choices = [translation];
@@ -147,6 +165,16 @@ const ChaptersList = () => {
     setTranslation(null);
     setAnswer(false);
   };
+
+  const handleDetailsClick = (word) => {
+    setSelectedWord(word);
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
+
   return (
     <Box
       style={{
@@ -271,63 +299,88 @@ const ChaptersList = () => {
             Words Learned: {currentWordIndex + 1} /{" "}
             {selectedChapter.words.length}
           </Typography>
-
           <Card
-            sx={{
-              mb: 2,
-              backgroundColor: "rgba(255, 255, 255, 0.8)",
-              borderRadius: "10px",
-              boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
-            }}
-          >
-            <CardContent
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography
-                variant="h5"
-                component="div"
-                sx={{ textAlign: "center" }}
-              >
-                {selectedChapter.words[currentWordIndex]}
-              </Typography>
-              <IconButton
-                color="success"
-                onClick={() => handlePlayAudio(translation)}
-              >
-                <VolumeUpIcon sx={{ color: "#1769aa" }}></VolumeUpIcon>
-              </IconButton>
-            </CardContent>
-          </Card>
+  sx={{
+    mb: 2,
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderRadius: "10px",
+    boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
+    transition: "box-shadow 0.3s ease-in-out",
+    "&:hover": {
+      boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)",
+    },
+  }}
+>
+  <CardContent>
+    <Grid container alignItems="center" spacing={2}>
+      <Grid item>
+        <Tooltip
+          title="Click to see source word details"
+          placement="left"
+          TransitionComponent={Fade}
+          TransitionProps={{ timeout: 900 }}
+        >
+          <IconButton onClick={() => handleDetailsClick(selectedChapter.words[currentWordIndex])}>
+            <InfoOutlinedIcon sx={{ color: "#1769aa" }} />
+          </IconButton>
+        </Tooltip>
+      </Grid>
+      <Grid item xs={6}>
+        <Typography variant="h5" component="div" sx={{ textAlign: "center", fontWeight: "bold", color: "#1769aa" }}>
+          {selectedChapter.words[currentWordIndex]}
+        </Typography>
+      </Grid>
+      <Grid item>
+        <Tooltip
+          title="Click to hear pronunciation of Translated word"
+          placement="right"
+          TransitionComponent={Fade}
+          TransitionProps={{ timeout: 900 }}
+        >
+          <IconButton color="success" onClick={() => handlePlayAudio(translation)}>
+            <VolumeUpIcon sx={{ color: "#1769aa" }} />
+          </IconButton>
+        </Tooltip>
+      </Grid>
+      <Grid item xs={12}>
+        <Box mt={1}>
+          <Typography variant="body1">Examples</Typography>
+        </Box>
+      </Grid>
+    </Grid>
+  </CardContent>
+</Card>
+
+
           {translation && (
             <FormControl
               component="fieldset"
               sx={{
                 backgroundColor: "rgba(255, 255, 255, 0.8)",
+                opacity: answer ? "0.5" : "0.8",
                 borderRadius: "10px",
                 boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
                 padding: "20px",
                 marginBottom: "20px",
+                transition: "box-shadow 0.3s ease-in-out",
+                "&:hover": {
+                  boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)",
+                },
               }}
             >
-              <RadioGroup
-                aria-label="choices"
-                name="choices"
-                value={selectedChoice}
-                onChange={handleChoiceChange}
-              >
+              <Grid container spacing={2}>
                 {choices.map((choice, index) => (
-                  <FormControlLabel
-                    key={index}
-                    value={choice}
-                    control={<Radio />}
-                    label={choice}
-                  />
+                  <Grid item xs={6} sm={6} md={6} lg={6} key={index}>
+                    <FormControlLabel
+                      value={choice}
+                      control={<Radio />}
+                      label={choice}
+                      onChange={handleChoiceChange}
+                      checked={selectedChoice === choice}
+                    />
+                  </Grid>
                 ))}
-              </RadioGroup>
+              </Grid>
             </FormControl>
           )}
           <div>
@@ -339,6 +392,7 @@ const ChaptersList = () => {
             >
               Previous Word
             </Button>
+
             <Button
               variant="contained"
               onClick={handleNextWord}
@@ -350,6 +404,7 @@ const ChaptersList = () => {
               Next Word
             </Button>
           </div>
+
           <Button
             color="success"
             variant="contained"
@@ -359,6 +414,7 @@ const ChaptersList = () => {
           >
             Check Answer
           </Button>
+
           {error && (
             <Box>
               <Typography color="error" sx={{ mt: 2, textAlign: "center" }}>
@@ -384,11 +440,11 @@ const ChaptersList = () => {
           )}
 
           <Button
-            variant="contained"
+            variant="outlined"
             onClick={handleClose}
+            color="error"
             sx={{
               mt: 2,
-              backgroundColor: "rgba(255, 152, 0, 1)",
               borderRadius: "10px",
               boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
               transition: "all 0.2s ease-in-out",
@@ -431,6 +487,22 @@ const ChaptersList = () => {
             Select a chapter to start learning
           </Typography>
         </Box>
+      )}
+      {dialogOpen && (
+        // <WordDetails open={dialogOpen} onClose={() => setDialogOpen(false)} word={selectedWord} />
+        <Dialog
+          open={dialogOpen}
+          onClose={handleDialogClose}
+          TransitionComponent={dialogTransition}
+        >
+          <DialogTitle>Word Details</DialogTitle>
+          <DialogContent>
+            <WordDetails word={selectedWord} />
+          </DialogContent>
+          <Button onClick={handleDialogClose} color="primary">
+            Close
+          </Button>
+        </Dialog>
       )}
     </Box>
   );
