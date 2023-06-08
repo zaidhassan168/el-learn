@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   FormControl,
-  RadioGroup,
   FormControlLabel,
   Radio,
   Button,
@@ -19,7 +18,7 @@ import {
   getTranslation,
   handlePlayAudio,
 } from "../utils/Functions";
-import Grid from '@mui/material/Grid'; // Grid version 1
+import Grid from "@mui/material/Grid"; // Grid version 1
 import { CustomListItem } from "../utils/ReUseable";
 import SvgBackground from "../assets/abstract.svg";
 // import firebase from "firebase/compat/app";
@@ -85,6 +84,7 @@ const ChaptersList = () => {
       getTranslation(word).then((data) => {
         // console.log(data);
         setTranslation(data);
+        setIsListOpen(false);
       });
     }
   }, [selectedChapter, currentWordIndex]);
@@ -271,6 +271,9 @@ const ChaptersList = () => {
             animation: "fadeIn 1s ease-in-out",
           }}
         >
+         <Typography style={{ marginBottom: '30px', fontWeight: 'bold', fontSize: 'larger' }}>
+  {selectedChapter.id} - {selectedChapter.title}
+</Typography>
           <Box
             sx={{
               width: "50%",
@@ -300,57 +303,73 @@ const ChaptersList = () => {
             {selectedChapter.words.length}
           </Typography>
           <Card
-  sx={{
-    mb: 2,
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    borderRadius: "10px",
-    boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
-    transition: "box-shadow 0.3s ease-in-out",
-    "&:hover": {
-      boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)",
-    },
-  }}
->
-  <CardContent>
-    <Grid container alignItems="center" spacing={2}>
-      <Grid item>
-        <Tooltip
-          title="Click to see source word details"
-          placement="left"
-          TransitionComponent={Fade}
-          TransitionProps={{ timeout: 900 }}
-        >
-          <IconButton onClick={() => handleDetailsClick(selectedChapter.words[currentWordIndex])}>
-            <InfoOutlinedIcon sx={{ color: "#1769aa" }} />
-          </IconButton>
-        </Tooltip>
-      </Grid>
-      <Grid item xs={6}>
-        <Typography variant="h5" component="div" sx={{ textAlign: "center", fontWeight: "bold", color: "#1769aa" }}>
-          {selectedChapter.words[currentWordIndex]}
-        </Typography>
-      </Grid>
-      <Grid item>
-        <Tooltip
-          title="Click to hear pronunciation of Translated word"
-          placement="right"
-          TransitionComponent={Fade}
-          TransitionProps={{ timeout: 900 }}
-        >
-          <IconButton color="success" onClick={() => handlePlayAudio(translation)}>
-            <VolumeUpIcon sx={{ color: "#1769aa" }} />
-          </IconButton>
-        </Tooltip>
-      </Grid>
-      <Grid item xs={12}>
-        <Box mt={1}>
-          <Typography variant="body1">Examples</Typography>
-        </Box>
-      </Grid>
-    </Grid>
-  </CardContent>
-</Card>
-
+            sx={{
+              mb: 2,
+              backgroundColor: "rgba(255, 255, 255, 0.9)",
+              borderRadius: "10px",
+              boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
+              transition: "box-shadow 0.3s ease-in-out",
+              "&:hover": {
+                boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)",
+              },
+            }}
+          >
+            <CardContent>
+              <Grid container alignItems="center" spacing={2}>
+                <Grid item>
+                  <Tooltip
+                    title="Click to see source word details"
+                    placement="left"
+                    TransitionComponent={Fade}
+                    TransitionProps={{ timeout: 900 }}
+                  >
+                    <IconButton
+                      onClick={() =>
+                        handleDetailsClick(
+                          selectedChapter.words[currentWordIndex]
+                        )
+                      }
+                    >
+                      <InfoOutlinedIcon sx={{ color: "#1769aa" }} />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography
+                    variant="h5"
+                    component="div"
+                    sx={{
+                      textAlign: "center",
+                      fontWeight: "bold",
+                      color: "#1769aa",
+                    }}
+                  >
+                    {selectedChapter.words[currentWordIndex]}
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Tooltip
+                    title="Click to hear pronunciation of Translated word"
+                    placement="right"
+                    TransitionComponent={Fade}
+                    TransitionProps={{ timeout: 900 }}
+                  >
+                    <IconButton
+                      color="success"
+                      onClick={() => handlePlayAudio(translation)}
+                    >
+                      <VolumeUpIcon sx={{ color: "#1769aa" }} />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+                <Grid item xs={12}>
+                  <Box mt={1}>
+                    <Typography variant="body1">Examples</Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
 
           {translation && (
             <FormControl

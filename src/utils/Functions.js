@@ -62,10 +62,10 @@ let languageCode;
 // var targetLanguage = '';
 const speech = new Speech();
 function initializeSpeech(language) {
-  // if (speech.hasBrowserSupport()) {
-  //   // returns a boolean
-  //   console.log("speech synthesis supported");
-  // }
+  if (speech.hasBrowserSupport()) {
+    // returns a boolean
+    console.log("speech synthesis supported");
+  }
   let voice = "";
   let lang = "";
   switch (language) {
@@ -118,6 +118,8 @@ function initializeSpeech(language) {
 export { initializeSpeech };
 
 function handlePlayAudio(translation) {
+
+  console.log("translation in speech functions", translation);
   speech
       .speak({
         text: translation,
