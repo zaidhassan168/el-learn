@@ -212,9 +212,9 @@ export { setLanguageCode };
 // calling apis
 
 const getTranslation = async (word) => {
-  let key = "fd71f14f5fb047ee998a71b51665aea3";
+  let key = "a66e5450f625435ba6d83335dd70fd10";
   let endpoint = "https://api.cognitive.microsofttranslator.com";
-  let location = "eastus";
+  let location = "swedencentral";
   console.log("languageCode", languageCode);
   if (languageCode === undefined || languageCode === ""|| languageCode === null) {
     languageCode = "sv";
@@ -251,9 +251,9 @@ export { getTranslation };
 const callDictionaryAPI = async (word) => {
   // const { v4: uuidv4 } = require("uuid");
 
-  let key = "fd71f14f5fb047ee998a71b51665aea3";
+  let key = "a66e5450f625435ba6d83335dd70fd10";
   let endpoint = "https://api.cognitive.microsofttranslator.com";
-  let location = "eastus";
+  let location = "swedencentral";
 
   const url = `${endpoint}/dictionary/lookup?api-version=3.0&from=en&to=${languageCode}`;
 
@@ -286,9 +286,9 @@ export { callDictionaryAPI };
 const callDictionaryExampleAPI = async (source, target) => {
   // const { v4: uuidv4 } = require("uuid");
 
-  let key = "fd71f14f5fb047ee998a71b51665aea3";
+  let key = "a66e5450f625435ba6d83335dd70fd10";
   let endpoint = "https://api.cognitive.microsofttranslator.com";
-  let location = "eastus";
+  let location = "swedencentral";
 
   const url = `${endpoint}/dictionary/examples?api-version=3.0&from=en&to=${languageCode}`;
   const options = {

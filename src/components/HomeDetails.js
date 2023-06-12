@@ -437,7 +437,7 @@ const HomeDetails = () => {
                     </p>
                   </div>
                 )}
-                {/* <h3>Examples:</h3>
+                <h3>Examples:</h3>
                 {apiResponse2 && apiResponse2.length > 0 && (
                   <div>
                     {apiResponse2[0].examples.map((example) => (
@@ -453,7 +453,7 @@ const HomeDetails = () => {
                       </div>
                     ))}
                   </div>
-                )} */}
+                )}
               </div>
             )}
 

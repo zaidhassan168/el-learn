@@ -43,7 +43,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import LinearProgress from "@mui/material/LinearProgress";
 import Tooltip from "@mui/material/Tooltip";
-
+import WordExamples from "./WordExamples";
 import WordDetails from "./WordDetails";
 
 const ChaptersList = () => {
@@ -57,6 +57,7 @@ const ChaptersList = () => {
   const [choices, setChoices] = useState([]);
   const [selectedChoice, setSelectedChoice] = useState("");
   const [error, setError] = useState("");
+  const [isExampleOpen, setIsExampleOpen] = useState(false);
   const [chapters, setChapters] = useState([]);
   // const speech = new Speech();
   const [answer, setAnswer] = useState(null);
@@ -146,6 +147,9 @@ const ChaptersList = () => {
     setError("");
     setAnswer(false);
   };
+const handleExamples = () => {
+    setIsExampleOpen(true);
+  };
 
   const handleCheckAnswer = () => {
     if (selectedChoice.toLowerCase() === translation.toLowerCase()) {
@@ -173,6 +177,10 @@ const ChaptersList = () => {
 
   const handleDialogClose = () => {
     setDialogOpen(false);
+  };
+
+  const handleExamplesClose = () => {
+    setIsExampleOpen(false);
   };
 
   return (
@@ -364,7 +372,9 @@ const ChaptersList = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <Box mt={1}>
-                    <Typography variant="body1">Examples</Typography>
+                    <Button variant="outlined" onClick={handleExamples}>
+                     Examples
+                    </Button>
                   </Box>
                 </Grid>
               </Grid>
@@ -519,6 +529,21 @@ const ChaptersList = () => {
             <WordDetails word={selectedWord} />
           </DialogContent>
           <Button onClick={handleDialogClose} color="primary">
+            Close
+          </Button>
+        </Dialog>
+      )}
+      {isExampleOpen && (
+       <Dialog
+          open={isExampleOpen}
+          onClose={handleExamplesClose}
+          TransitionComponent={dialogTransition}
+        >
+          <DialogTitle>Examples</DialogTitle>
+          <DialogContent>
+            <WordExamples word={selectedChapter.words[currentWordIndex]} />
+          </DialogContent>
+          <Button onClick={handleExamplesClose} color="primary">
             Close
           </Button>
         </Dialog>
