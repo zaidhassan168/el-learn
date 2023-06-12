@@ -1,76 +1,81 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { callDictionaryAPI, callDictionaryExampleAPI, handlePlayAudio, getSelectedLanguage } from '../utils/Functions';
+import {
+  callDictionaryAPI,
+  callDictionaryExampleAPI,
+  handlePlayAudio,
+  getSelectedLanguage,
+} from '../utils/Functions';
 
-const WordExamples = ({ word }) => {
-  const [isCalling, setIsCalling] = useState(false);
-  const [response, setResponse] = useState(null);
-  const [apiResponse2, setApiResponse2] = useState([]);
+function WordExamples({ word }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [dictionaryResult, setDictionaryResult] = useState(null);
+  const [exampleResult, setExampleResult] = useState(null);
+  const [translatedWord, setTranslatedWord] = useState(null);
 
-  const callApi = useCallback(async () => {
-    setIsCalling(true);
-    const result = await callDictionaryAPI(word);
-    console.log(result[0].displaySource);
-    console.log(result[0].translations[0].displayTarget);
-    const  result2 =  await callDictionaryExampleAPI(
-        result[0].displaySource,
-        result[0].translations[0].displayTarget
-      )
-      // console.log(result2);
-    // callTextToSpeechAPI(result[0].displaySource);
-        // console.log(result[0].displaySource);
-        // console.log(result[0].translations[0].displayTarget);
-        // console.log(apiResponse2);
-    setResponse(result);
-    setApiResponse2(result2);
+  const fetchDictionaryData = async (word) => {
+    try {
+      setIsLoading(true);
 
-    console.log(result2);
-    setIsCalling(false);
-  }, [word]);
+      const dictionaryData = await callDictionaryAPI(word);
+      const exampleData = await callDictionaryExampleAPI(
+        dictionaryData[0].displaySource,
+        dictionaryData[0].translations[0].displayTarget
+      );
+
+      setDictionaryResult(dictionaryData);
+      setExampleResult(exampleData.examples);
+      setTranslatedWord(dictionaryData[0].translations[0].displayTarget);
+
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (word) {
-      callApi();
+      fetchDictionaryData(word);
     }
-  }, [word, callApi]);
+  }, [word]);
 
   const lang = getSelectedLanguage();
 
   return (
     <div>
-      {isCalling && (
+      {isLoading && (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 2 }}>
           <CircularProgress />
         </Box>
       )}
-      {!isCalling && (
+      {!isLoading && (
         <div>
           {/* Render word details here */}
-          {word}
+          <p>{word}</p>
 
           {/* Render examples */}
-          <div>
-            {/* {apiResponse2.map((example) => (
-              <div key={example.normalizedSource}>
-                <p>
-                  <strong>English:</strong> {example.sourcePrefix}
-                  {example.sourceTerm} {example.sourceSuffix}
-                </p>
-                <p>
-                  <strong>{lang}:</strong> {example.targetPrefix}
-                  {example.targetTerm} {example.targetSuffix}
-                </p>
-              </div>
-            ))} */}
-          </div>
-          {/* <Button variant="contained" color="primary" onClick={() => handlePlayAudio(word)}>
-            Play Audio
-          </Button> */}
+          {exampleResult && exampleResult.length > 0 && (
+            <div>
+              {exampleResult.map((example, index) => (
+                <div key={index}>
+                  <p>
+                    <strong>English:</strong> {example.sourcePrefix}
+                    {example.sourceTerm} {example.sourceSuffix}
+                  </p>
+                  <p>
+                    <strong>{lang}:</strong> {example.targetPrefix}
+                    {example.targetTerm} {example.targetSuffix}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
   );
-};
+}
 
 export default WordExamples;
