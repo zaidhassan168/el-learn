@@ -19,13 +19,20 @@ function WordExamples({ word }) {
       setIsLoading(true);
 
       const dictionaryData = await callDictionaryAPI(word);
-      const exampleData = await callDictionaryExampleAPI(
-        dictionaryData[0].displaySource,
-        dictionaryData[0].translations[0].displayTarget
+      // const exampleData = await callDictionaryExampleAPI(
+      //   dictionaryData[0].displaySource,
+      //   dictionaryData[0].translations[0].displayTarget
+      // );
+
+      setExampleResult(
+        await callDictionaryExampleAPI(
+         dictionaryData[0].displaySource,
+         dictionaryData[0].translations[0].displayTarget
+        )
       );
 
       setDictionaryResult(dictionaryData);
-      setExampleResult(exampleData.examples);
+      // setExampleResult(exampleData);
       setTranslatedWord(dictionaryData[0].translations[0].displayTarget);
 
       setIsLoading(false);
@@ -37,6 +44,7 @@ function WordExamples({ word }) {
 
   useEffect(() => {
     if (word) {
+      console.log('WordExamples: useEffect: word: ', word);
       fetchDictionaryData(word);
     }
   }, [word]);
@@ -58,15 +66,15 @@ function WordExamples({ word }) {
           {/* Render examples */}
           {exampleResult && exampleResult.length > 0 && (
             <div>
-              {exampleResult.map((example, index) => (
-                <div key={index}>
+              {exampleResult[0].examples.map(async (example) => (
+                <div key={example.normalizedSource}>
                   <p>
                     <strong>English:</strong> {example.sourcePrefix}
                     {example.sourceTerm} {example.sourceSuffix}
                   </p>
                   <p>
-                    <strong>{lang}:</strong> {example.targetPrefix}
-                    {example.targetTerm} {example.targetSuffix}
+                    <strong>{lang}:</strong> {await example.targetPrefix}
+                    {await example.targetTerm} {await example.targetSuffix}
                   </p>
                 </div>
               ))}

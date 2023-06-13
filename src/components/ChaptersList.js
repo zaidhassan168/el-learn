@@ -10,6 +10,7 @@ import {
   FormControlLabel,
   Radio,
   Button,
+  CircularProgress,
 } from "@mui/material";
 // import { styled } from "@mui/material/styles";
 import {
@@ -18,6 +19,8 @@ import {
   getTranslation,
   handlePlayAudio,
   getSelectedLanguage,
+  callDictionaryAPI,
+  callDictionaryExampleAPI,
 } from "../utils/Functions";
 import Grid from "@mui/material/Grid"; // Grid version 1
 import { CustomListItem } from "../utils/ReUseable";
@@ -64,7 +67,8 @@ const ChaptersList = () => {
   // const speech = new Speech();
   const [answer, setAnswer] = useState(null);
   const containerRef = useRef(null);
-
+  const [isCallingExampleAPI, setIsCallingExampleAPI] = useState(false);
+  const [apiResponse2, setApiResponse2] = useState(null);
   // const [currentUser, setCurrentUser] = useState(null);
   // const user = firebase.auth().currentUser;
   // const uid = user.uid;
@@ -130,7 +134,7 @@ const getLanguage = async () => {
     const user = firebase.auth().currentUser;
   const uid = user.uid;
   console.log(uid);
-  console.log(selectedChapter.id);
+  // console.log(selectedChapter.id);
   const selectedChapterRef = firebase.database().ref("userProgress").child(uid).child(chapter.id);
   const languageRef = selectedChapterRef.child(language); // Replace "language" with the selected language
 
@@ -219,6 +223,32 @@ const handleExamples = () => {
     setIsExampleOpen(false);
   };
 
+  const handleExampleclick = async () => {
+    setIsExampleOpen(true);
+
+    // setDialogWordIndex(selectedChapter.words.indexOf(word));
+    try {
+      setIsCallingExampleAPI(true);
+      console.log(selectedChapter.words[currentWordIndex]);
+      const result = await callDictionaryAPI(selectedChapter.words[currentWordIndex]);
+      setApiResponse2(
+        await callDictionaryExampleAPI(
+          result[0].displaySource,
+          result[0].translations[0].displayTarget
+        )
+      );
+      // callTextToSpeechAPI(result[0].displaySource);
+setIsCallingExampleAPI(false);
+      // setTranslatedWord(result[0].translations[0].displayTarget);
+      console.log(result[0].translations);
+      console.log(apiResponse2);
+      // setApiResponse(result);
+      // Update the response state variable for the next word
+      // Example: setApiResponse(result);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <Box
       style={{
@@ -406,9 +436,9 @@ const handleExamples = () => {
                     </IconButton>
                   </Tooltip>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={11}>
                   <Box mt={1}>
-                    <Button variant="outlined" onClick={handleExamples}>
+                    <Button variant="text" onClick={handleExampleclick}>
                      Examples
                     </Button>
                   </Box>
@@ -569,7 +599,7 @@ const handleExamples = () => {
           </Button>
         </Dialog>
       )}
-      {isExampleOpen && (
+      {/* {isExampleOpen && (
        <Dialog
           open={isExampleOpen}
           onClose={handleExamplesClose}
@@ -583,7 +613,66 @@ const handleExamples = () => {
             Close
           </Button>
         </Dialog>
-      )}
+      )} */}
+
+      <Dialog
+       open={isExampleOpen}
+          onClose={handleExamplesClose}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>examples</DialogTitle>
+        {isCallingExampleAPI && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              p: 2,
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        )}
+        {!isCallingExampleAPI && (
+          <DialogContent>
+            {/* Render word details here */}
+
+            {/* Render translations */}
+            {apiResponse2 && apiResponse2.length > 0 && (
+              <div>
+                {apiResponse2 && apiResponse2.length > 0 && (
+                  <div>
+                    {apiResponse2[0].examples.map((example) => (
+                      <div key={example.normalizedSource}>
+                        <p>
+                          <strong>English:</strong> {example.sourcePrefix}
+                          {example.sourceTerm} {example.sourceSuffix}
+                        </p>
+                        <p>
+                          <strong>{language}:</strong> {example.targetPrefix}
+                          {example.targetTerm} {example.targetSuffix}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+          </DialogContent>
+        )}
+        {/* <DialogActions>
+          <IconButton color="primary" onClick={handleCloseDialog}>
+            <CloseIcon />
+          </IconButton>
+        </DialogActions> */}
+      </Dialog>
+
+
+
+
+
     </Box>
   );
 };
