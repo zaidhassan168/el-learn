@@ -17,12 +17,13 @@ import {
   fetchChapters,
   getTranslation,
   handlePlayAudio,
+  getSelectedLanguage,
 } from "../utils/Functions";
 import Grid from "@mui/material/Grid"; // Grid version 1
 import { CustomListItem } from "../utils/ReUseable";
 import SvgBackground from "../assets/abstract.svg";
 // import firebase from "firebase/compat/app";
-import "firebase/compat/database";
+import firebase from "firebase/compat/app";
 // import { auth } from "../utils/Firebase";
 import Lottie from "lottie-react";
 import wrong from "../assets/animations/wrong.json";
@@ -59,6 +60,7 @@ const ChaptersList = () => {
   const [error, setError] = useState("");
   const [isExampleOpen, setIsExampleOpen] = useState(false);
   const [chapters, setChapters] = useState([]);
+  const [language, setLanguage] = useState(getSelectedLanguage());
   // const speech = new Speech();
   const [answer, setAnswer] = useState(null);
   const containerRef = useRef(null);
@@ -73,6 +75,7 @@ const ChaptersList = () => {
   });
 
   useEffect(() => {
+    getLanguage();
     fetchChapters().then((chaptersArray) => {
       console.log(chaptersArray);
       setChapters(chaptersArray);
@@ -109,6 +112,12 @@ const ChaptersList = () => {
   const toggleList = () => {
     setIsListOpen((prevState) => !prevState);
   };
+const getLanguage = async () => {
+
+    const language = await getSelectedLanguage();
+    setLanguage(language);
+  };
+
 
   const handleClickChapter = (chapter) => {
     setSelectedChapter(chapter);
@@ -118,6 +127,22 @@ const ChaptersList = () => {
     setSelectedChoice("");
     setError("");
     setAnswer(false);
+    const user = firebase.auth().currentUser;
+  const uid = user.uid;
+  console.log(uid);
+  console.log(selectedChapter.id);
+  const selectedChapterRef = firebase.database().ref("userProgress").child(uid).child(chapter.id);
+  const languageRef = selectedChapterRef.child(language); // Replace "language" with the selected language
+
+  // Retrieve the current word index for the selected language
+  languageRef.once("value", (snapshot) => {
+    const progress = snapshot.val();
+    if (progress !== null) {
+      setCurrentWordIndex(progress);
+    } else {
+      setCurrentWordIndex(0);
+    }
+  });
   };
 
   const handleNextWord = () => {
@@ -151,15 +176,26 @@ const handleExamples = () => {
     setIsExampleOpen(true);
   };
 
-  const handleCheckAnswer = () => {
+  const handleCheckAnswer = async () => {
     if (selectedChoice.toLowerCase() === translation.toLowerCase()) {
-      setError("");
+      setError(""); 
+
       // dbRef.child("learnedWords").push(selectedChapter.words[currentWordIndex]);
       // dbRef
       //   .child("score")
       //   .transaction((currentScore) => (currentScore || 0) + 1);
       setAnswer(true);
       // handleNextWord();
+      setLanguage(await getSelectedLanguage());
+      const user = firebase.auth().currentUser;
+      const uid = user.uid;
+      console.log(uid);
+      console.log(selectedChapter);
+      const selectedChapterRef = firebase.database().ref("userProgress").child(uid).child(selectedChapter.id);
+      console.log(language);
+      const languageRef = selectedChapterRef.child(language); // Replace "language" with the selected language
+      
+      languageRef.set(currentWordIndex + 1) // Store the next word index
     } else {
       setError("Incorrect answer. Try again.");
     }
