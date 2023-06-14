@@ -9,6 +9,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { styled } from "@mui/material/styles";
 import SvgBackground from "../assets/abstract.svg";
 import { PieChart } from 'react-minimal-pie-chart';
+import waiting from "../assets/animations/waiting-pigeon.json";
+import Lottie from "lottie-react";
 
 // Importing utility functions
 import {
@@ -256,30 +258,54 @@ const HomeDetails = () => {
               <Typography variant="h4" component="h2">
                 Welcome, {auth.currentUser && auth.currentUser.displayName}!
               </Typography>
-              {/* Display word count */}
-              {wordCount === 0 ? (
-                <Typography variant="h6" component="p" sx={{ mt: 2 }}>
-                  You have not started your journey!
-                </Typography>
-              ) : (
-                <Box sx={{ width: '180px', marginTop: '10px' }}>
-                  <Typography>
-                    Your Progress
-                  </Typography>
-                  {/* Render progress chart */}
-                  <PieChart
-                    data={data}
-                    expandOnHover
-                    onSectorHover={(d, i, e) => {
-                      if (d) {
-                        console.log("Mouse enter - Index:", i, "Data:", d, "Event:", e)
-                      } else {
-                        console.log("Mouse leave - Index:", i, "Event:", e)
-                      }
-                    }}
-                  />
+              <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', marginTop: '10px' }}>
+                {/* Display word count */}
+                <Box sx={{ width: '180px', marginTop: '50px', marginLeft: '3%' }}>
+                  {wordCount === 0 ? (
+                    <Typography variant="h6" component="p" sx={{ mt: 2 }}>
+                      You have not started your journey!
+                    </Typography>
+                  ) : (
+                    <Box sx={{ width: '180px', marginTop: '10px' }}>
+                      <Typography variant="h6">
+                        Your Progress
+                      </Typography>
+                      {/* Render progress chart */}
+                      <PieChart
+                        data={data}
+                        expandOnHover
+                        onSectorHover={(d, i, e) => {
+                          if (d) {
+                            console.log("Mouse enter - Index:", i, "Data:", d, "Event:", e)
+                          } else {
+                            console.log("Mouse leave - Index:", i, "Event:", e)
+                          }
+                        }}
+                      />
+                    </Box>
+                  )}
                 </Box>
-              )}
+                <Box sx={{ width: '180px', marginTop: '10px', marginLeft: '55%' }}>
+                  <Lottie
+                    animationData={waiting}
+                    style={{ width: "300px", height: "300px" }}
+                  />
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      textAlign: "right",
+                      animation: "zoom 2s infinite",
+                      "@keyframes zoom": {
+                        "0%": { transform: "scale(1)" },
+                        "50%": { transform: "scale(1.1)" },
+                        "100%": { transform: "scale(1)" },
+                      },
+                    }}
+                  >
+                    Want to Learn!
+                  </Typography>
+                </Box>
+              </Box>
 
               {/* Render loading spinner */}
               {loading ? (
@@ -305,7 +331,7 @@ const HomeDetails = () => {
                           sx={{
                             mt: 3,
                             mb: 4,
-                            color: "#757575",
+                            color: "#1876D1",
                             animation: "zoom 2s infinite",
                             "@keyframes zoom": {
                               "0%": { transform: "scale(1)" },
