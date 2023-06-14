@@ -110,6 +110,11 @@ export default function Home() {
   const [nameIntials, setNameIntials] = useState(""); // set initial value to "home"
   const [targetLanguage, setTargetLanguage] = useState("");
 
+  const handleDataFromChild = (data) => {
+    console.log('Data received from child:', data);
+    setSelectedItem("chaptersList")
+    // Handle the data from the child component in the parent component
+  };
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -156,7 +161,7 @@ export default function Home() {
       case "home":
         return (
           <>
-           <ChaptersList />
+           <ChaptersList  />
           </>
         );
       case "settings":
@@ -168,7 +173,7 @@ export default function Home() {
         case "chaptersList":
           return (
             <>
-             <HomeDetails />
+             <HomeDetails sendDataToParent={handleDataFromChild}/>
 
             </>
           );
