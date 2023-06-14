@@ -1,6 +1,10 @@
+// Importing firebase library
 import firebase from "firebase/compat/app";
+
+// Importing firebase auth module
 import "firebase/compat/auth";
 
+// Firebase configuration object
 const firebaseConfig = {
   apiKey: "AIzaSyCd64icq3m0sk3ehbPatrwt4xQeM2UBUo8",
   authDomain: "el-learn-8e905.firebaseapp.com",
@@ -12,6 +16,8 @@ const firebaseConfig = {
   measurementId: "G-STGFL18T5T"
 };
 
+// Initializing firebase app with the configuration object
 firebase.initializeApp(firebaseConfig);
 
+// Exporting firebase auth module
 export const auth = firebase.auth();
