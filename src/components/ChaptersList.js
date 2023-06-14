@@ -50,14 +50,14 @@ import Tooltip from "@mui/material/Tooltip";
 // Importing the WordDetails component
 import WordDetails from "./WordDetails";
 
-const ChaptersList = () => {
+const ChaptersList = ({ chapterSelected }) => {
 
   // State variables for managing the component's behavior
   const [isListOpen, setIsListOpen] = useState(true); // boolean state variable to toggle the display of the chapter list
   const [dialogOpen, setDialogOpen] = useState(false); // boolean state variable to toggle the display of a dialog box
   const [selectedWord, setSelectedWord] = useState(""); // string state variable to store the selected word
 
-  const [selectedChapter, setSelectedChapter] = useState(null); // object state variable to store the selected chapter
+  const [selectedChapter, setSelectedChapter] = useState(chapterSelected); // object state variable to store the selected chapter
   const [currentWordIndex, setCurrentWordIndex] = useState(0); // integer state variable to store the index of the current word being displayed
   const [translation, setTranslation] = useState(""); // string state variable to store the translation of the current word
   const [choices, setChoices] = useState([]); // array state variable to store the choices for the multiple choice question
@@ -188,10 +188,6 @@ const ChaptersList = () => {
     setAnswer(false);
   };
 
-  // This function is called when the "Examples" button is clicked and sets the isExampleOpen state variable to true
-  const handleExamples = () => {
-    setIsExampleOpen(true);
-  };
 
   // This function is called when the "Check Answer" button is clicked and checks if the selected choice matches the translation and sets the error and answer state variables accordingly
   const handleCheckAnswer = async () => {

@@ -19,8 +19,6 @@ import {
   getSelectedLanguage,
 } from "../utils/Functions";
 
-import { useNavigate } from 'react-router-dom';
-
 import { auth } from "../utils/Firebase";
 import firebase from "firebase/compat/app";
 import Fade from "@mui/material/Fade";
@@ -81,7 +79,6 @@ const HomeDetails = ({ sendDataToParent }) => {
     { title: "Remaining Words", value: 25 - wordCount, color: "#6A2135" },
   ]
 
-  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetching data
@@ -258,7 +255,7 @@ const HomeDetails = ({ sendDataToParent }) => {
   return (
     <HomeContainer>
       {isChapterSelected ? (
-        <ChaptersList />
+        <ChaptersList chapterSelected= {selectedChapter} />
       ) : (
         <>
           {/* Home details container */}
@@ -333,6 +330,7 @@ const HomeDetails = ({ sendDataToParent }) => {
                             {/* Render chapter buttons */}
                             <Box
                               sx={{
+                                mb: isMobileView ? 4 : 0,
                                 gridTemplateColumns:
                                   "repeat(auto-fit, minmax(120px, 1fr))",
                                 gridGap: "15px",
