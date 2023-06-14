@@ -17,9 +17,9 @@
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
+    "react-minimal-pie-chart": "^8.4.0",
     "react-router-dom": "^6.11.0",
     "react-scripts": "5.0.1",
-    "react-svg-piechart": "^2.4.2",
     "speak-tts": "^2.0.8",
     "web-vitals": "^2.1.4"
   },

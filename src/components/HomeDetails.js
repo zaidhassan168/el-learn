@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import { styled } from "@mui/material/styles";
 import SvgBackground from "../assets/abstract.svg";
-import ReactSvgPieChart from "react-svg-piechart"
+import { PieChart } from 'react-minimal-pie-chart';
 
 // Importing utility functions
 import {
@@ -75,8 +75,8 @@ const HomeDetails = () => {
 
   // Data for the pie chart
   const data = [
-    { title: "Learned Words", value: wordCount, color: "#22594e" },
-    { title: "Remaining Words", value: 25 - wordCount, color: "#2f7d6d" },
+    { title: "Learned Words", value: wordCount, color: "#E38627" },
+    { title: "Remaining Words", value: 25 - wordCount, color: "#6A2135" },
   ]
   useEffect(() => {
     // Fetching data
@@ -267,7 +267,7 @@ const HomeDetails = () => {
                     Your Progress
                   </Typography>
                   {/* Render progress chart */}
-                  <ReactSvgPieChart
+                  <PieChart
                     data={data}
                     expandOnHover
                     onSectorHover={(d, i, e) => {
