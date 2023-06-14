@@ -257,7 +257,7 @@ const HomeDetails = ({ sendDataToParent }) => {
   return (
     <HomeContainer>
       {isChapterSelected ? (
-        <ChaptersList chapterSelected= {selectedChapter} />
+        <ChaptersList chapterSelected={selectedChapter} />
       ) : (
         <>
           {/* Home details container */}
@@ -271,7 +271,7 @@ const HomeDetails = ({ sendDataToParent }) => {
                   </Typography>
                   <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', marginTop: '10px' }}>
                     {/* Display word count */}
-                    <Box sx={{ width: '180px', marginTop: '50px', marginLeft: '3%' }}>
+                    <Box sx={{ flex: '1', marginTop: '50px', marginLeft: '3%' }}>
                       {wordCount === 0 ? (
                         <Typography variant="h6" component="p" sx={{ mt: 2 }}>
                           You have not started your journey!
@@ -279,7 +279,6 @@ const HomeDetails = ({ sendDataToParent }) => {
                       ) : (
                         <Box sx={{ width: '180px', marginTop: '10px' }}>
                           <Typography variant="h6">
-
                             Your Progress
                           </Typography>
                           {/* Render progress chart */}
@@ -297,15 +296,22 @@ const HomeDetails = ({ sendDataToParent }) => {
                         </Box>
                       )}
                     </Box>
-                    <Box sx={{ width: '180px', marginTop: '10px', marginLeft: '55%' }}>
+                    <Box
+                      sx={{
+                        flex: '0 0 300px',
+                        marginTop: '10px',
+                        marginLeft: 'auto',
+                        display: { xs: 'none', sm: 'block' } // Hide the box on small screens
+                      }}
+                    >
                       <Lottie
                         animationData={waiting}
-                        style={{ width: "300px", height: "300px" }}
+                        style={{ width: "100%", height: "auto" }}
                       />
                       <Typography
                         variant="h6"
                         sx={{
-                          textAlign: "right",
+                          textAlign: "center",
                           animation: "zoom 2s infinite",
                           "@keyframes zoom": {
                             "0%": { transform: "scale(1)" },
