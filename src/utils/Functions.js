@@ -40,7 +40,7 @@ function initializeSpeech(language) { // Defining a function to initialize the s
   speech.init({ // Initializing the speech synthesis with the specified parameters
     'volume': 1,
     'lang': lang,
-    'rate': 1,
+    'rate': 0.8,
     'pitch': 1,
     'voice': voice,
     'splitSentences': true,
