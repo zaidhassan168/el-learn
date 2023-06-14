@@ -109,7 +109,7 @@ export { fetchChapters }; // Exporting the fetchChapters function as a named exp
 
 const getSelectedLanguage = () => { // Defining a function to get the selected language from Firebase
   return new Promise((resolve, reject) => { // Returning a promise
-    const userId = auth.currentUser.uid; // Getting the current user's ID
+    const userId = auth?.currentUser?.uid == null ? JSON.parse(localStorage.getItem("user")).uid : auth?.currentUser?.uid; // Getting the current user's ID
     const userRef = firebase.database().ref('users/' + userId); // Creating a reference to the user's data in the Firebase database
     userRef.child('selectedLanguage').once('value', (snapshot) => { // Retrieving the selected language from the database
       const selectedLanguage = snapshot.val() || ''; // Extracting the selected language from the snapshot
