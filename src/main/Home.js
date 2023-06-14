@@ -161,7 +161,7 @@ export default function Home() {
       case "home":
         return (
           <>
-           <ChaptersList  />
+           <HomeDetails sendDataToParent={handleDataFromChild}/>
           </>
         );
       case "settings":
@@ -173,8 +173,7 @@ export default function Home() {
         case "chaptersList":
           return (
             <>
-             <HomeDetails sendDataToParent={handleDataFromChild}/>
-
+             <ChaptersList  />
             </>
           );
       default:
