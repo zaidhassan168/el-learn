@@ -1,24 +1,24 @@
 // Importing necessary components and functions
-import React, { useEffect, useState, useCallback } from "react";
-import firebase from "firebase/compat/app";
-import "firebase/compat/database";
-import { auth } from "../utils/Firebase";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
-import SkipNextIcon from "@mui/icons-material/SkipNext";
-import CircularProgress from "@mui/material/CircularProgress";
-import SvgBackground from "../assets/abstract.svg";
+import React, { useEffect, useState, useCallback } from "react"; // Importing necessary components and functions
+import firebase from "firebase/compat/app"; // Importing firebase
+import "firebase/compat/database"; // Importing firebase database
+import { auth } from "../utils/Firebase"; // Importing auth from Firebase
+import Box from "@mui/material/Box"; // Importing Box component from Material UI
+import Grid from "@mui/material/Grid"; // Importing Grid component from Material UI
+import Card from "@mui/material/Card"; // Importing Card component from Material UI
+import CardContent from "@mui/material/CardContent"; // Importing CardContent component from Material UI
+import Button from "@mui/material/Button"; // Importing Button component from Material UI
+import Typography from "@mui/material/Typography"; // Importing Typography component from Material UI
+import SkipPreviousIcon from "@mui/icons-material/SkipPrevious"; // Importing SkipPreviousIcon component from Material UI
+import SkipNextIcon from "@mui/icons-material/SkipNext"; // Importing SkipNextIcon component from Material UI
+import CircularProgress from "@mui/material/CircularProgress"; // Importing CircularProgress component from Material UI
+import SvgBackground from "../assets/abstract.svg"; // Importing SVG background image
 
 export default function WordCard() {
-  const [word, setWord] = useState(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [response, setResponse] = useState(null);
-  const [loaded, setLoaded] = useState(false);
+  const [word, setWord] = useState(null); // Initializing state for word
+  const [currentIndex, setCurrentIndex] = useState(0); // Initializing state for currentIndex
+  const [response, setResponse] = useState(null); // Initializing state for response
+  const [loaded, setLoaded] = useState(false); // Initializing state for loaded
 
   // Function to handle API call
   const handleApiCall = useCallback(async () => {
