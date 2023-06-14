@@ -42,29 +42,6 @@ const storeWords = () => {
 
 export default storeWords;
 
-
-// export const addWordsToChapters = async (wordsArray) => {
-//   try {
-//     const chaptersRef = firebase.database().ref('chapters');
-
-//     // Fetch all chapters
-//     const snapshot = await chaptersRef.once('value');
-//     const chapters = snapshot.val();
-
-//     // Loop through each chapter and add the words
-//     for (const chapterId in chapters) {
-//       if (Object.hasOwnProperty.call(chapters, chapterId)) {
-//         const chapterRef = chaptersRef.child(chapterId).child('words');
-//         chapterRef.push().set(wordsArray);
-//       }
-//     }
-
-//     return true;
-//   } catch (error) {
-//     console.error('Failed to add words to chapters:', error);
-//     return false;
-//   }
-// };
 const chapters = [
   'Greetings and Introductions',
   'Numbers and Counting',
