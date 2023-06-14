@@ -12,6 +12,7 @@ import Home from "./Home";
 import LogIn from "../authentication/LogIn";
 import Typography from "@mui/material/Typography";
 import { Zoom } from "@mui/material";
+import ChaptersList from "../components/ChaptersList";
 
 // Defining the main component
 const App = () => {
@@ -67,6 +68,7 @@ const App = () => {
           ) : (
             <Route path="/home" element={<Navigate to="/login" />} />
           )}
+          <Route path="/chaptersList" element={<ChaptersList/>} />
           <Route path="/login" element={<LogIn />} />
         </Routes>
       </main>

@@ -19,6 +19,8 @@ import {
   getSelectedLanguage,
 } from "../utils/Functions";
 
+import { useNavigate } from 'react-router-dom';
+
 import { auth } from "../utils/Firebase";
 import firebase from "firebase/compat/app";
 import Fade from "@mui/material/Fade";
@@ -30,7 +32,7 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-
+import ChaptersList from "./ChaptersList";
 // Styling components
 const HomeContainer = styled(Box)({
   backgroundImage: `url(${SvgBackground})`,
@@ -55,7 +57,7 @@ const HomeDetailsPaper = styled(Paper)(({ theme }) => ({
   boxShadow: theme.shadows[10],
 }));
 
-const HomeDetails = () => {
+const HomeDetails = ({ sendDataToParent }) => {
   // State variables
   const [wordCount, setWordCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -72,12 +74,15 @@ const HomeDetails = () => {
   const [isCalling, setIsCalling] = useState(false);
   const [translatedWord, setTranslatedWord] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState("");
-
+  const [isChapterSelected, setIsChapterSelected] = useState(false)
   // Data for the pie chart
   const data = [
     { title: "Learned Words", value: wordCount, color: "#E38627" },
     { title: "Remaining Words", value: 25 - wordCount, color: "#6A2135" },
   ]
+
+  const navigate = useNavigate();
+
   useEffect(() => {
     // Fetching data
     const fetchData = async () => {
@@ -133,11 +138,20 @@ const HomeDetails = () => {
     };
   }, []);
 
+  const handleClickChild = (chapter) => {
+    // const data = 'Example Data';
+    // navigate("/chaptersList");
+    setIsChapterSelected(true);
+    sendDataToParent(chapter); // Call the callback function in the parent component with the data
+
+  };
   // Function to handle chapter click
   const handleChapterClick = (chapter) => {
+    handleClickChild(chapter);
     setSelectedChapter(chapter);
     setSelectedWord(null);
     setShowWordList(true);
+
   };
 
   // Function to handle word click
@@ -243,269 +257,290 @@ const HomeDetails = () => {
 
   return (
     <HomeContainer>
-      {/* Home details container */}
-      <HomeDetailsContainer
-        container
-        justifyContent="center"
-        alignItems="center"
-      >
-        <Grid item xs={12} md={10}>
-          {/* Home details paper */}
-          <HomeDetailsPaper>
-            <>
-              <Typography variant="h4" component="h2">
-                Welcome, {auth.currentUser && auth.currentUser.displayName}!
-              </Typography>
-              {/* Display word count */}
-              {wordCount === 0 ? (
-                <Typography variant="h6" component="p" sx={{ mt: 2 }}>
-                  You have not started your journey!
-                </Typography>
-              ) : (
-                <Box sx={{ width: '180px', marginTop: '10px' }}>
-                  <Typography>
-                    Your Progress
-                  </Typography>
-                  {/* Render progress chart */}
-                  <PieChart
-                    data={data}
-                    expandOnHover
-                    onSectorHover={(d, i, e) => {
-                      if (d) {
-                        console.log("Mouse enter - Index:", i, "Data:", d, "Event:", e)
-                      } else {
-                        console.log("Mouse leave - Index:", i, "Event:", e)
-                      }
-                    }}
-                  />
-                </Box>
-              )}
-
-              {/* Render loading spinner */}
-              {loading ? (
-                <Box sx={{ mt: 4 }}>
-                  <CircularProgress />
-                </Box>
-              ) : (
+      {isChapterSelected ? (
+        <ChaptersList />
+      ) : (
+        <>
+          {/* Home details container */}
+          <HomeDetailsContainer container justifyContent="center" alignItems="center">
+            <Grid item xs={12} md={10}>
+              {/* Home details paper */}
+              <HomeDetailsPaper>
                 <>
-                  {/* Render error message */}
-                  {error && (
-                    <Typography color="error" sx={{ mt: 4 }}>
-                      {error}
+                  <Typography variant="h4" component="h2">
+                    Welcome, {auth.currentUser && auth.currentUser.displayName}!
+                  </Typography>
+                  {/* Display word count */}
+                  {wordCount === 0 ? (
+                    <Typography variant="h6" component="p" sx={{ mt: 2 }}>
+                      You have not started your journey!
                     </Typography>
-                  )}
-                  {/* Check if word list is shown */}
-                  {!showWordList ? (
-                    // Chapter list section
-                    <Fade in={!showWordList}>
-                      <Box sx={{ mt: 2, mb: 3 }}>
-                        <Typography
-                          variant="h6"
-                          component="p"
-                          sx={{
-                            mt: 3,
-                            mb: 4,
-                            color: "#757575",
-                            animation: "zoom 2s infinite",
-                            "@keyframes zoom": {
-                              "0%": { transform: "scale(1)" },
-                              "50%": { transform: "scale(1.2)" },
-                              "100%": { transform: "scale(1)" },
-                            },
-                          }}
-                        >
-                          Select a chapter
-                        </Typography>
-                        {/* Render chapter buttons */}
-                        <Box
-                          sx={{
-                            gridTemplateColumns:
-                              "repeat(auto-fit, minmax(120px, 1fr))",
-                            gridGap: "15px",
-                            paddingRight: "20px",
-                          }}
-                        >
-                          {chapters.map((chapter) => (
-                            <Button
-                              key={chapter.id}
-                              variant="outlined"
-                              color={
-                                selectedChapter?.id === chapter.id
-                                  ? "secondary"
-                                  : "primary"
-                              }
-                              size="large"
-                              onClick={() => handleChapterClick(chapter)}
-                              sx={{
-                                borderRadius: "10px",
-                                boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-                                transition: "all 0.3s ease-in-out",
-                                "&:hover": {
-                                  transform: "scale(1.05)",
-                                  boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.2)",
-                                },
-                                m: 1,
-                              }}
-                            >
-                              {chapter.id}
-                            </Button>
-                          ))}
-                        </Box>
-                      </Box>
-                    </Fade>
                   ) : (
-                    // Word list section
-                    <Fade in={showWordList}>
-                      <Box sx={{ mt: 4 }}>
-                        {/* Back button to go back to chapter list */}
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          size="large"
-                          onClick={() => setShowWordList(false)}
-                          sx={{ mt: 2 }}
-                        >
-                          Back
-                        </Button>
-                        <Typography variant="h6" component="p" sx={{ mt: 4 }}>
-                          Select a word:
+                    <Box sx={{ width: '180px', marginTop: '10px' }}>
+                      <Typography>
+                        Your Progress
+                      </Typography>
+                      {/* Render progress chart */}
+                      <PieChart
+                        data={data}
+                        expandOnHover
+                        onSectorHover={(d, i, e) => {
+                          if (d) {
+                            console.log("Mouse enter - Index:", i, "Data:", d, "Event:", e)
+                          } else {
+                            console.log("Mouse leave - Index:", i, "Event:", e)
+                          }
+                        }}
+                      />
+                    </Box>
+                  )}
+
+                  {/* Render loading spinner */}
+                  {loading ? (
+                    <Box sx={{ mt: 4 }}>
+                      <CircularProgress />
+                    </Box>
+                  ) : (
+                    <>
+                      {/* Render error message */}
+                      {error && (
+                        <Typography color="error" sx={{ mt: 4 }}>
+                          {error}
                         </Typography>
-                        {/* Render word buttons */}
-                        <Box sx={{ width: "100%", mt: 2, mb: 2 }}>
-                          {selectedChapter.words.map((word) => (
-                            <Button
-                              key={word}
-                              variant="contained"
-                              color={
-                                selectedWord === word ? "secondary" : "primary"
-                              }
-                              size="large"
-                              onClick={() => handleWordClick(word)}
+                      )}
+                      {/* Check if word list is shown */}
+                      {!showWordList ? (
+                        // Chapter list section
+                        <Fade in={!showWordList}>
+                          <Box sx={{ mt: 2, mb: 3 }}>
+                            <Typography
+                              variant="h6"
+                              component="p"
                               sx={{
-                                marginRight: 2,
-                                marginBottom: 2,
-                                minWidth: "120px",
-                                borderRadius: "50px",
-                                boxShadow: "0px 5px 10px rgba(0, 0, 0, 0.2)",
-                                transition: "all 0.3s ease-in-out",
-                                "&:hover": {
-                                  transform: "scale(1.1)",
-                                  boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.2)",
-                                },
-                                "&:active": {
-                                  transform: "scale(0.9)",
-                                  boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
+                                mt: 3,
+                                mb: 4,
+                                color: "#757575",
+                                animation: "zoom 2s infinite",
+                                "@keyframes zoom": {
+                                  "0%": { transform: "scale(1)" },
+                                  "50%": { transform: "scale(1.2)" },
+                                  "100%": { transform: "scale(1)" },
                                 },
                               }}
                             >
-                              {word}
+                              Select a chapter
+                            </Typography>
+                            {/* Render chapter buttons */}
+                            <Box
+                              sx={{
+                                gridTemplateColumns:
+                                  "repeat(auto-fit, minmax(120px, 1fr))",
+                                gridGap: "15px",
+                                paddingRight: "20px",
+                              }}
+                            >
+                              {chapters.map((chapter) => (
+                                <Button
+                                  key={chapter.id}
+                                  variant="outlined"
+                                  color={
+                                    selectedChapter?.id === chapter.id
+                                      ? "secondary"
+                                      : "primary"
+                                  }
+                                  size="large"
+                                  onClick={() => handleChapterClick(chapter)}
+                                  sx={{
+                                    borderRadius: "10px",
+                                    boxShadow:
+                                      "0px 0px 10px rgba(0, 0, 0, 0.1)",
+                                    transition: "all 0.3s ease-in-out",
+                                    "&:hover": {
+                                      transform: "scale(1.05)",
+                                      boxShadow:
+                                        "0px 0px 20px rgba(0, 0, 0, 0.2)",
+                                    },
+                                    m: 1,
+                                  }}
+                                >
+                                  {chapter.id}
+                                </Button>
+                              ))}
+                            </Box>
+                          </Box>
+                        </Fade>
+                      ) : (
+                        // Word list section
+                        <Fade in={showWordList}>
+                          <Box sx={{ mt: 4 }}>
+                            {/* Back button to go back to chapter list */}
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              size="large"
+                              onClick={() => setShowWordList(false)}
+                              sx={{ mt: 2 }}
+                            >
+                              Back
                             </Button>
-                          ))}
-                        </Box>
-                      </Box>
-                    </Fade>
+                            <Typography
+                              variant="h6"
+                              component="p"
+                              sx={{ mt: 4 }}
+                            >
+                              Select a word:
+                            </Typography>
+                            {/* Render word buttons */}
+                            <Box sx={{ width: "100%", mt: 2, mb: 2 }}>
+                              {selectedChapter.words.map((word) => (
+                                <Button
+                                  key={word}
+                                  variant="contained"
+                                  color={
+                                    selectedWord === word
+                                      ? "secondary"
+                                      : "primary"
+                                  }
+                                  size="large"
+                                  onClick={() => handleWordClick(word)}
+                                  sx={{
+                                    marginRight: 2,
+                                    marginBottom: 2,
+                                    minWidth: "120px",
+                                    borderRadius: "50px",
+                                    boxShadow:
+                                      "0px 5px 10px rgba(0, 0, 0, 0.2)",
+                                    transition: "all 0.3s ease-in-out",
+                                    "&:hover": {
+                                      transform: "scale(1.1)",
+                                      boxShadow:
+                                        "0px 10px 20px rgba(0, 0, 0, 0.2)",
+                                    },
+                                    "&:active": {
+                                      transform: "scale(0.9)",
+                                      boxShadow:
+                                        "0px 2px 5px rgba(0, 0, 0, 0.2)",
+                                    },
+                                  }}
+                                >
+                                  {word}
+                                </Button>
+                              ))}
+                            </Box>
+                          </Box>
+                        </Fade>
+                      )}
+                    </>
                   )}
                 </>
-              )}
-            </>
-          </HomeDetailsPaper>
-        </Grid>
-      </HomeDetailsContainer>
+              </HomeDetailsPaper>
+            </Grid>
+          </HomeDetailsContainer>
 
-      {/* Word Dialog */}
-      <Dialog
-        open={showWordDialog}
-        onClose={handleCloseDialog}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Word Details</DialogTitle>
-        {/* Render loading spinner */}
-        {isCalling && (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              p: 2,
-            }}
+          {/* Word Dialog */}
+          <Dialog
+            open={showWordDialog}
+            onClose={handleCloseDialog}
+            maxWidth="sm"
+            fullWidth
           >
-            <CircularProgress />
-          </Box>
-        )}
-        {!isCalling && (
-          <DialogContent>
-            {/* Render word details */}
-            {selectedChapter && selectedChapter.words[dialogWordIndex]}
+            <DialogTitle>Word Details</DialogTitle>
+            {/* Render loading spinner */}
+            {isCalling && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  p: 2,
+                }}
+              >
+                <CircularProgress />
+              </Box>
+            )}
+            {!isCalling && (
+              <DialogContent>
+                {/* Render word details */}
+                {selectedChapter && selectedChapter.words[dialogWordIndex]}
 
-            {/* Render translations */}
-            {apiResponse && apiResponse.length > 0 && (
-              <div>
-                <h3>Translations:</h3>
-                {apiResponse[0].translations.length > 0 && (
+                {/* Render translations */}
+                {apiResponse && apiResponse.length > 0 && (
                   <div>
-                    <p>
-                      <strong>English:</strong> {apiResponse[0].displaySource}
-                    </p>
-                    <p>
-                      <strong>{selectedLanguage}:</strong>{" "}
-                      {apiResponse[0].translations[0].displayTarget}
-                    </p>
-                    <p>
-                      <strong>Part of Speech:</strong>{" "}
-                      {apiResponse[0].translations[0].posTag}
-                    </p>
-                  </div>
-                )}
-                <h3>Examples:</h3>
-                {/* Render examples */}
-                {apiResponse2 && apiResponse2.length > 0 && (
-                  <div>
-                    {apiResponse2[0].examples.map((example) => (
-                      <div key={example.normalizedSource}>
+                    <h3>Translations:</h3>
+                    {apiResponse[0].translations.length > 0 && (
+                      <div>
                         <p>
-                          <strong>English:</strong> {example.sourcePrefix}
-                          {example.sourceTerm} {example.sourceSuffix}
+                          <strong>English:</strong>{" "}
+                          {apiResponse[0].displaySource}
                         </p>
                         <p>
                           <strong>{selectedLanguage}:</strong>{" "}
-                          {example.targetPrefix}
-                          {example.targetTerm} {example.targetSuffix}
+                          {
+                            apiResponse[0].translations[0].displayTarget
+                          }
+                        </p>
+                        <p>
+                          <strong>Part of Speech:</strong>{" "}
+                          {
+                            apiResponse[0].translations[0].posTag
+                          }
                         </p>
                       </div>
-                    ))}
+                    )}
+                    <h3>Examples:</h3>
+                    {/* Render examples */}
+                    {apiResponse2 && apiResponse2.length > 0 && (
+                      <div>
+                        {apiResponse2[0].examples.map((example) => (
+                          <div key={example.normalizedSource}>
+                            <p>
+                              <strong>English:</strong>{" "}
+                              {example.sourcePrefix}
+                              {example.sourceTerm} {example.sourceSuffix}
+                            </p>
+                            <p>
+                              <strong>{selectedLanguage}:</strong>{" "}
+                              {example.targetPrefix}
+                              {example.targetTerm} {example.targetSuffix}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
-            )}
 
-            {/* Play audio button */}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => handlePlayAudio(translatedWord)}
-            >
-              Play Audio
-            </Button>
-          </DialogContent>
-        )}
-        {/* Dialog actions */}
-        <DialogActions>
-          <IconButton
-            color="primary"
-            onClick={handlePreviousWord}
-            disabled={dialogWordIndex === 0}
-          >
-            <ChevronLeftIcon />
-          </IconButton>
-          <IconButton color="primary" onClick={handleNextWord}>
-            <ChevronRightIcon />
-          </IconButton>
-          <IconButton color="primary" onClick={handleCloseDialog}>
-            <CloseIcon />
-          </IconButton>
-        </DialogActions>
-      </Dialog>
+                {/* Play audio button */}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handlePlayAudio(translatedWord)}
+                >
+                  Play Audio
+                </Button>
+              </DialogContent>
+            )}
+            {/* Dialog actions */}
+            <DialogActions>
+              <IconButton
+                color="primary"
+                onClick={handlePreviousWord}
+                disabled={dialogWordIndex === 0}
+              >
+                <ChevronLeftIcon />
+              </IconButton>
+              <IconButton color="primary" onClick={handleNextWord}>
+                <ChevronRightIcon />
+              </IconButton>
+              <IconButton color="primary" onClick={handleCloseDialog}>
+                <CloseIcon />
+              </IconButton>
+            </DialogActions>
+          </Dialog>
+        </>
+      )
+      };
+
     </HomeContainer>
   );
 };
