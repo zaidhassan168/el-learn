@@ -1,3 +1,4 @@
+// Importing necessary components and functions
 import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -9,7 +10,7 @@ import { styled } from "@mui/material/styles";
 import SvgBackground from "../assets/abstract.svg";
 import ReactSvgPieChart from "react-svg-piechart"
 
-// import { CustomListItem } from "../utils/ReUseable";
+// Importing utility functions
 import {
   fetchChapters,
   callDictionaryAPI,
@@ -17,7 +18,7 @@ import {
   handlePlayAudio,
   getSelectedLanguage,
 } from "../utils/Functions";
-// import WordCard from "./WordCard";
+
 import { auth } from "../utils/Firebase";
 import firebase from "firebase/compat/app";
 import Fade from "@mui/material/Fade";
@@ -30,6 +31,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
+// Styling components
 const HomeContainer = styled(Box)({
   backgroundImage: `url(${SvgBackground})`,
   backgroundSize: "cover",
@@ -54,6 +56,7 @@ const HomeDetailsPaper = styled(Paper)(({ theme }) => ({
 }));
 
 const HomeDetails = () => {
+  // State variables
   const [wordCount, setWordCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -70,25 +73,31 @@ const HomeDetails = () => {
   const [translatedWord, setTranslatedWord] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState("");
 
+  // Data for the pie chart
   const data = [
     { title: "Learned Words", value: wordCount, color: "#22594e" },
     { title: "Remaining Words", value: 25 - wordCount, color: "#2f7d6d" },
-
   ]
   useEffect(() => {
+    // Fetching data
     const fetchData = async () => {
       try {
+        // Fetching word count from Firebase
         const snapshot = await firebase
           .database()
           .ref(`users/${auth.currentUser.uid}/history`)
           .once("value");
         const words = snapshot.val();
         if (words) {
+          // Count the number of words
           const count = Object.keys(words).length;
+          // Set the word count state
           setWordCount(count);
         }
 
+        // Fetching chapters
         fetchChapters().then((chapters) => {
+          // Set the chapters state
           setChapters(chapters);
         });
         setLoading(false);
@@ -102,12 +111,8 @@ const HomeDetails = () => {
     fetchData();
   }, [selectedLanguage]);
 
-
-
-
-
-
   useEffect(() => {
+    // Function to handle window resize event
     const handleResize = () => {
       if (window.innerWidth <= 600) {
         setIsMobileView(true);
@@ -116,24 +121,31 @@ const HomeDetails = () => {
       }
     };
 
+    // Initial handling of window resize
     handleResize();
+
+    // Event listener for window resize
     window.addEventListener("resize", handleResize);
 
+    // Cleanup function to remove event listener
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
 
+  // Function to handle chapter click
   const handleChapterClick = (chapter) => {
     setSelectedChapter(chapter);
     setSelectedWord(null);
     setShowWordList(true);
   };
 
+  // Function to handle word click
   const handleWordClick = async (word) => {
     setSelectedWord(word);
     setShowWordDialog(true);
     setDialogWordIndex(selectedChapter.words.indexOf(word));
+
     try {
       setIsCalling(true);
       const result = await callDictionaryAPI(word);
@@ -143,45 +155,34 @@ const HomeDetails = () => {
           result[0].translations[0].displayTarget
         )
       );
-      // callTextToSpeechAPI(result[0].displaySource);
-
       setIsCalling(false);
       setTranslatedWord(result[0].translations[0].displayTarget);
-      console.log(result[0].translations);
       setApiResponse(result);
-      // Update the response state variable for the next word
-      // Example: setApiResponse(result);
     } catch (error) {
       console.error(error);
     }
   };
 
+  // Function to handle next word click
   const handleNextWord = async () => {
     const nextIndex = dialogWordIndex + 1;
+
     if (nextIndex < selectedChapter.words.length) {
       setDialogWordIndex(nextIndex);
       const nextWord = selectedChapter.words[nextIndex];
+
       try {
         setIsCalling(true);
         const result = await callDictionaryAPI(nextWord);
         setApiResponse(result);
-
         setApiResponse2(
           await callDictionaryExampleAPI(
             result[0].displaySource,
             result[0].translations[0].displayTarget
           )
         );
-        // callTextToSpeechAPI(result[0].displaySource);
-
-        // console.log(result2);
-        console.log(apiResponse2[0].examples);
         setIsCalling(false);
         setTranslatedWord(result[0].translations[0].displayTarget);
-
-        // console.log(result[0].translations);
-        // Update the response state variable for the next word
-        // Example: setApiResponse(result);
       } catch (error) {
         console.error(error);
       }
@@ -189,14 +190,19 @@ const HomeDetails = () => {
   };
 
   const handlePreviousWord = async () => {
+    // Calculate the index of the previous word
     const previousIndex = dialogWordIndex - 1;
     if (previousIndex >= 0) {
+      // Update the dialog word index
       setDialogWordIndex(previousIndex);
+      // Get the previous word from the selected chapter
       const previousWord = selectedChapter.words[previousIndex];
       try {
         setIsCalling(true);
+        // Call the dictionary API for the previous word
         const result = await callDictionaryAPI(previousWord);
         setApiResponse(result);
+        // Call the dictionary example API with the appropriate parameters
         setApiResponse2(
           await callDictionaryExampleAPI(
             result[0].displaySource,
@@ -204,10 +210,9 @@ const HomeDetails = () => {
           )
         );
         setIsCalling(false);
+        // Update the translated word state
         setTranslatedWord(result[0].translations[0].displayTarget);
-
         console.log(result);
-
       } catch (error) {
         console.error(error);
       }
@@ -215,24 +220,22 @@ const HomeDetails = () => {
   };
 
   const handleCloseDialog = () => {
+    // Close the word dialog by setting the showWordDialog state to false
     setShowWordDialog(false);
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let lang = getSelectedLanguage().then((lang) => {
-          setSelectedLanguage(lang);
-        }
-        );
+        // Retrieve the selected language
+        const lang = await getSelectedLanguage();
+        // Set the selected language state
         setSelectedLanguage(lang);
       } catch (error) {
         setLoading(false);
         console.log(error);
         setError("Failed to fetch data.");
       }
-      setSelectedLanguage(await getSelectedLanguage());
-      // console.log(selectedLanguage, "this ur selected language");
     };
 
     fetchData();
@@ -240,17 +243,20 @@ const HomeDetails = () => {
 
   return (
     <HomeContainer>
+      {/* Home details container */}
       <HomeDetailsContainer
         container
         justifyContent="center"
         alignItems="center"
       >
         <Grid item xs={12} md={10}>
+          {/* Home details paper */}
           <HomeDetailsPaper>
             <>
               <Typography variant="h4" component="h2">
                 Welcome, {auth.currentUser && auth.currentUser.displayName}!
               </Typography>
+              {/* Display word count */}
               {wordCount === 0 ? (
                 <Typography variant="h6" component="p" sx={{ mt: 2 }}>
                   You have not started your journey!
@@ -260,11 +266,10 @@ const HomeDetails = () => {
                   <Typography>
                     Your Progress
                   </Typography>
+                  {/* Render progress chart */}
                   <ReactSvgPieChart
                     data={data}
-                    // If you need expand on hover (or touch) effect
                     expandOnHover
-                    // If you need custom behavior when sector is hovered (or touched)
                     onSectorHover={(d, i, e) => {
                       if (d) {
                         console.log("Mouse enter - Index:", i, "Data:", d, "Event:", e)
@@ -274,20 +279,22 @@ const HomeDetails = () => {
                     }}
                   />
                 </Box>
-
               )}
 
+              {/* Render loading spinner */}
               {loading ? (
                 <Box sx={{ mt: 4 }}>
                   <CircularProgress />
                 </Box>
               ) : (
                 <>
+                  {/* Render error message */}
                   {error && (
                     <Typography color="error" sx={{ mt: 4 }}>
                       {error}
                     </Typography>
                   )}
+                  {/* Check if word list is shown */}
                   {!showWordList ? (
                     // Chapter list section
                     <Fade in={!showWordList}>
@@ -309,11 +316,9 @@ const HomeDetails = () => {
                         >
                           Select a chapter
                         </Typography>
+                        {/* Render chapter buttons */}
                         <Box
                           sx={{
-                            // width: "100%",
-                            mb: isMobileView ? 4 : 0,
-                            // display: "flex",
                             gridTemplateColumns:
                               "repeat(auto-fit, minmax(120px, 1fr))",
                             gridGap: "15px",
@@ -352,11 +357,12 @@ const HomeDetails = () => {
                     // Word list section
                     <Fade in={showWordList}>
                       <Box sx={{ mt: 4 }}>
+                        {/* Back button to go back to chapter list */}
                         <Button
                           variant="contained"
                           color="primary"
                           size="large"
-                          onClick={() => setShowWordList(false)} // Back button to go back to chapter list
+                          onClick={() => setShowWordList(false)}
                           sx={{ mt: 2 }}
                         >
                           Back
@@ -364,6 +370,7 @@ const HomeDetails = () => {
                         <Typography variant="h6" component="p" sx={{ mt: 4 }}>
                           Select a word:
                         </Typography>
+                        {/* Render word buttons */}
                         <Box sx={{ width: "100%", mt: 2, mb: 2 }}>
                           {selectedChapter.words.map((word) => (
                             <Button
@@ -413,6 +420,7 @@ const HomeDetails = () => {
         fullWidth
       >
         <DialogTitle>Word Details</DialogTitle>
+        {/* Render loading spinner */}
         {isCalling && (
           <Box
             sx={{
@@ -427,7 +435,7 @@ const HomeDetails = () => {
         )}
         {!isCalling && (
           <DialogContent>
-            {/* Render word details here */}
+            {/* Render word details */}
             {selectedChapter && selectedChapter.words[dialogWordIndex]}
 
             {/* Render translations */}
@@ -450,6 +458,7 @@ const HomeDetails = () => {
                   </div>
                 )}
                 <h3>Examples:</h3>
+                {/* Render examples */}
                 {apiResponse2 && apiResponse2.length > 0 && (
                   <div>
                     {apiResponse2[0].examples.map((example) => (
@@ -459,7 +468,8 @@ const HomeDetails = () => {
                           {example.sourceTerm} {example.sourceSuffix}
                         </p>
                         <p>
-                          <strong>{selectedLanguage}:</strong> {example.targetPrefix}
+                          <strong>{selectedLanguage}:</strong>{" "}
+                          {example.targetPrefix}
                           {example.targetTerm} {example.targetSuffix}
                         </p>
                       </div>
@@ -469,6 +479,7 @@ const HomeDetails = () => {
               </div>
             )}
 
+            {/* Play audio button */}
             <Button
               variant="contained"
               color="primary"
@@ -478,6 +489,7 @@ const HomeDetails = () => {
             </Button>
           </DialogContent>
         )}
+        {/* Dialog actions */}
         <DialogActions>
           <IconButton
             color="primary"

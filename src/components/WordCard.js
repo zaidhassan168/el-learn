@@ -1,3 +1,4 @@
+// Importing necessary components and functions
 import React, { useEffect, useState, useCallback } from "react";
 import firebase from "firebase/compat/app";
 import "firebase/compat/database";
@@ -19,11 +20,13 @@ export default function WordCard() {
   const [response, setResponse] = useState(null);
   const [loaded, setLoaded] = useState(false);
 
+  // Function to handle API call
   const handleApiCall = useCallback(async () => {
     if (!word) return;
 
     setResponse(null); // reset response to null before fetching new data
 
+    // Fetch data from API
     const response = await fetch(
       `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
     );
@@ -42,6 +45,7 @@ export default function WordCard() {
   }, [word]);
 
   useEffect(() => {
+    // Fetch word from Firebase based on currentIndex
     const fetchWord = async () => {
       const snapshot = await firebase
         .database()
@@ -54,12 +58,14 @@ export default function WordCard() {
     fetchWord();
   }, [currentIndex]);
 
+  // Function to handle next button click
   const handleNextClick = async () => {
     setLoaded(false);
     setWord(null);
     setCurrentIndex(currentIndex + 1);
   };
 
+  // Function to handle previous button click
   const handlePrevClick = async () => {
     setLoaded(false);
     setWord(null);
@@ -67,24 +73,24 @@ export default function WordCard() {
   };
 
   useEffect(() => {
+    // Call the API when the word changes or when handleApiCall function changes
     handleApiCall();
   }, [word, handleApiCall]);
-
+  
   return (
     <Box
-    sx={{
-      display: 'flex',
-      flexWrap: 'wrap',
-      backgroundColor: '#f5f5f5',
-      padding: '20px',
-      borderRadius: '10px',
-      backgroundImage: `url(${SvgBackground})`,
-      backgroundSize: 'auto',
-      minHeight: '120vh',
-      backgroundPosition: "center bottom", // Adjust the background position
-      backgroundAttachment: "fixed", // Fix the background image so that it doesn't scroll
-
-    }}
+      sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        backgroundColor: '#f5f5f5',
+        padding: '20px',
+        borderRadius: '10px',
+        backgroundImage: `url(${SvgBackground})`,
+        backgroundSize: 'auto',
+        minHeight: '120vh',
+        backgroundPosition: "center bottom", // Adjust the background position
+        backgroundAttachment: "fixed", // Fix the background image so that it doesn't scroll
+      }}
     >
       <Box
         sx={{
