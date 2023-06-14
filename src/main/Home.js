@@ -17,8 +17,6 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import ImportContactsRoundedIcon from '@mui/icons-material/ImportContactsRounded';
-import RestoreRoundedIcon from "@mui/icons-material/RestoreRounded";
-import LocalLibraryRoundedIcon from "@mui/icons-material/LocalLibraryRounded";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import AppSettingsAltRoundedIcon from "@mui/icons-material/AppSettingsAltRounded";
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
@@ -28,18 +26,13 @@ import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 import { deepPurple } from "@mui/material/colors";
 import { useState, useEffect } from "react";
-import WordCard from "../components/WordCard";
 import Settings from "../components/Settings";
-import LanguageSelector from "../utils/LanguageSelector";
-// import {  FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+
 
 import firebase from "firebase/compat/app";
-// import "firebase/compat/database";
-import History from "../components/History";
 import HomeDetails from "../components/HomeDetails";
 import ChaptersList from "../components/ChaptersList";
 import {initializeSpeech} from "../utils/Functions";
-// import storeWords from "../utils/StoreWords";
 
 const drawerWidth = 240;
 
@@ -119,11 +112,6 @@ export default function Home() {
 
 
   useEffect(() => {
-    // const user = firebase.auth().currentUser;
-    // if (user && user.displayName) {
-    //   setDisplayName(user.displayName);
-    // }
-
     const user = JSON.parse(localStorage.getItem("user"));
     if (user && user.displayName) {
       setDisplayName(user.displayName);
@@ -171,18 +159,6 @@ export default function Home() {
            <ChaptersList />
           </>
         );
-      case "learn":
-        return (
-          <>
-            <WordCard />
-          </>
-        );
-      case "history":
-        return (
-          <>
-            <History />
-          </>
-        );
       case "settings":
         return (
           <>
@@ -223,12 +199,9 @@ export default function Home() {
           </Typography>
 
           <Box sx={{ display: "flex", alignItems: "center" }}>
-          <LanguageSelector />
           <Button color="inherit" onClick={handleLogout}>
             Logout
-          </Button>
-
-
+          </Button>   
           </Box>
         </Toolbar>
       </AppBar>
@@ -268,17 +241,10 @@ export default function Home() {
           {[
             { label: "Home", icon: <HomeRoundedIcon sx={{color: "#1769aa"}}></HomeRoundedIcon>, item: "home" },
             {
-              label: "Learn",
-              icon: <LocalLibraryRoundedIcon sx={{color: "#1769aa"}}></LocalLibraryRoundedIcon>,
-              item: "learn",
-            },
-            {
               label: "Chapter Word Details",
               icon: <ImportContactsRoundedIcon sx={{color: "#1769aa"}}></ImportContactsRoundedIcon>,
               item: "chaptersList",
             },
-            { label: "History", icon: <RestoreRoundedIcon  sx={{color: "#1769aa"}}>
-            </RestoreRoundedIcon>, item: "history" },
             {
               label: "Settings",
               icon: <AppSettingsAltRoundedIcon sx={{color: "#1769aa"}}>

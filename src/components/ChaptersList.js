@@ -12,7 +12,6 @@ import {
   Button,
   CircularProgress,
 } from "@mui/material";
-// import { styled } from "@mui/material/styles";
 import {
   shuffle,
   fetchChapters,
@@ -25,16 +24,12 @@ import {
 import Grid from "@mui/material/Grid"; // Grid version 1
 import { CustomListItem } from "../utils/ReUseable";
 import SvgBackground from "../assets/abstract.svg";
-// import firebase from "firebase/compat/app";
 import firebase from "firebase/compat/app";
-// import { auth } from "../utils/Firebase";
 import Lottie from "lottie-react";
 import wrong from "../assets/animations/wrong.json";
 import correct from "../assets/animations/correct.json";
-// import Speech from "speak-tts";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import IconButton from "@mui/material/IconButton";
-// import ListItem from "@mui/material/ListItem";
 import waiting from "../assets/animations/waiting-pigeon.json";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -47,7 +42,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import LinearProgress from "@mui/material/LinearProgress";
 import Tooltip from "@mui/material/Tooltip";
-import WordExamples from "./WordExamples";
 import WordDetails from "./WordDetails";
 
 const ChaptersList = () => {
@@ -64,15 +58,10 @@ const ChaptersList = () => {
   const [isExampleOpen, setIsExampleOpen] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [language, setLanguage] = useState(getSelectedLanguage());
-  // const speech = new Speech();
   const [answer, setAnswer] = useState(null);
   const containerRef = useRef(null);
   const [isCallingExampleAPI, setIsCallingExampleAPI] = useState(false);
   const [apiResponse2, setApiResponse2] = useState(null);
-  // const [currentUser, setCurrentUser] = useState(null);
-  // const user = firebase.auth().currentUser;
-  // const uid = user.uid;
-  // const dbRef = firebase.database().ref("progress").child(uid);
 
   const dialogTransition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -103,7 +92,7 @@ const ChaptersList = () => {
       while (choices.length < 4) {
         const randomWord =
           chapters[Math.floor(Math.random() * chapters.length)].words[
-            Math.floor(Math.random() * selectedChapter.words.length)
+          Math.floor(Math.random() * selectedChapter.words.length)
           ];
         if (!choices.includes(randomWord)) {
           choices.push(randomWord);
@@ -116,7 +105,7 @@ const ChaptersList = () => {
   const toggleList = () => {
     setIsListOpen((prevState) => !prevState);
   };
-const getLanguage = async () => {
+  const getLanguage = async () => {
 
     const language = await getSelectedLanguage();
     setLanguage(language);
@@ -132,21 +121,21 @@ const getLanguage = async () => {
     setError("");
     setAnswer(false);
     const user = firebase.auth().currentUser;
-  const uid = user.uid;
-  console.log(uid);
-  // console.log(selectedChapter.id);
-  const selectedChapterRef = firebase.database().ref("userProgress").child(uid).child(chapter.id);
-  const languageRef = selectedChapterRef.child(language); // Replace "language" with the selected language
+    const uid = user.uid;
+    console.log(uid);
+    // console.log(selectedChapter.id);
+    const selectedChapterRef = firebase.database().ref("userProgress").child(uid).child(chapter.id);
+    const languageRef = selectedChapterRef.child(language); // Replace "language" with the selected language
 
-  // Retrieve the current word index for the selected language
-  languageRef.once("value", (snapshot) => {
-    const progress = snapshot.val();
-    if (progress !== null) {
-      setCurrentWordIndex(progress);
-    } else {
-      setCurrentWordIndex(0);
-    }
-  });
+    // Retrieve the current word index for the selected language
+    languageRef.once("value", (snapshot) => {
+      const progress = snapshot.val();
+      if (progress !== null) {
+        setCurrentWordIndex(progress);
+      } else {
+        setCurrentWordIndex(0);
+      }
+    });
   };
 
   const handleNextWord = () => {
@@ -176,13 +165,13 @@ const getLanguage = async () => {
     setError("");
     setAnswer(false);
   };
-const handleExamples = () => {
+  const handleExamples = () => {
     setIsExampleOpen(true);
   };
 
   const handleCheckAnswer = async () => {
     if (selectedChoice.toLowerCase() === translation.toLowerCase()) {
-      setError(""); 
+      setError("");
 
       // dbRef.child("learnedWords").push(selectedChapter.words[currentWordIndex]);
       // dbRef
@@ -198,7 +187,7 @@ const handleExamples = () => {
       const selectedChapterRef = firebase.database().ref("userProgress").child(uid).child(selectedChapter.id);
       console.log(language);
       const languageRef = selectedChapterRef.child(language); // Replace "language" with the selected language
-      
+
       languageRef.set(currentWordIndex + 1) // Store the next word index
     } else {
       setError("Incorrect answer. Try again.");
@@ -238,7 +227,7 @@ const handleExamples = () => {
         )
       );
       // callTextToSpeechAPI(result[0].displaySource);
-setIsCallingExampleAPI(false);
+      setIsCallingExampleAPI(false);
       // setTranslatedWord(result[0].translations[0].displayTarget);
       console.log(result[0].translations);
       console.log(apiResponse2);
@@ -345,9 +334,9 @@ setIsCallingExampleAPI(false);
             animation: "fadeIn 1s ease-in-out",
           }}
         >
-         <Typography style={{ marginBottom: '30px', fontWeight: 'bold', fontSize: 'larger' }}>
-  {selectedChapter.id} - {selectedChapter.title}
-</Typography>
+          <Typography style={{ marginBottom: '30px', fontWeight: 'bold', fontSize: 'larger' }}>
+            {selectedChapter.id} - {selectedChapter.title}
+          </Typography>
           <Box
             sx={{
               width: "50%",
@@ -439,7 +428,7 @@ setIsCallingExampleAPI(false);
                 <Grid item xs={11}>
                   <Box mt={1}>
                     <Button variant="text" onClick={handleExampleclick}>
-                     Examples
+                      Examples
                     </Button>
                   </Box>
                 </Grid>
@@ -599,25 +588,9 @@ setIsCallingExampleAPI(false);
           </Button>
         </Dialog>
       )}
-      {/* {isExampleOpen && (
-       <Dialog
-          open={isExampleOpen}
-          onClose={handleExamplesClose}
-          TransitionComponent={dialogTransition}
-        >
-          <DialogTitle>Examples</DialogTitle>
-          <DialogContent>
-            <WordExamples word={selectedChapter.words[currentWordIndex]} />
-          </DialogContent>
-          <Button onClick={handleExamplesClose} color="primary">
-            Close
-          </Button>
-        </Dialog>
-      )} */}
-
       <Dialog
-       open={isExampleOpen}
-          onClose={handleExamplesClose}
+        open={isExampleOpen}
+        onClose={handleExamplesClose}
         maxWidth="sm"
         fullWidth
       >
@@ -662,16 +635,7 @@ setIsCallingExampleAPI(false);
 
           </DialogContent>
         )}
-        {/* <DialogActions>
-          <IconButton color="primary" onClick={handleCloseDialog}>
-            <CloseIcon />
-          </IconButton>
-        </DialogActions> */}
       </Dialog>
-
-
-
-
 
     </Box>
   );

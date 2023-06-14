@@ -7,6 +7,8 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import { styled } from "@mui/material/styles";
 import SvgBackground from "../assets/abstract.svg";
+import ReactSvgPieChart from "react-svg-piechart"
+
 // import { CustomListItem } from "../utils/ReUseable";
 import {
   fetchChapters,
@@ -27,10 +29,6 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-// import List from "@mui/material/List";
-// // import ListItem from "@mui/material/ListItem";
-// import ListItemText from "@mui/material/ListItemText";
-// import Speech from "speak-tts";
 
 const HomeContainer = styled(Box)({
   backgroundImage: `url(${SvgBackground})`,
@@ -72,6 +70,11 @@ const HomeDetails = () => {
   const [translatedWord, setTranslatedWord] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState("");
 
+  const data = [
+    { title: "Learned Words", value: wordCount, color: "#22594e" },
+    { title: "Remaining Words", value: 25 - wordCount, color: "#2f7d6d" },
+
+  ]
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -94,8 +97,6 @@ const HomeDetails = () => {
         console.log(error);
         setError("Failed to fetch data.");
       }
-      // setSelectedLanguage(await getSelectedLanguage());
-      // console.log(selectedLanguage, "this ur selected language");
     };
 
     fetchData();
@@ -202,16 +203,11 @@ const HomeDetails = () => {
             result[0].translations[0].displayTarget
           )
         );
-
-        // callTextToSpeechAPI(result[0].displaySource);
-
         setIsCalling(false);
         setTranslatedWord(result[0].translations[0].displayTarget);
 
         console.log(result);
-        // show output in log by converting to json
-        // console.log(result[0]);
-        // console.log(apiResponse);
+
       } catch (error) {
         console.error(error);
       }
@@ -240,7 +236,7 @@ const HomeDetails = () => {
     };
 
     fetchData();
-  }, [ dialogWordIndex]);
+  }, [dialogWordIndex]);
 
   return (
     <HomeContainer>
@@ -260,9 +256,25 @@ const HomeDetails = () => {
                   You have not started your journey!
                 </Typography>
               ) : (
-                <Typography variant="h6" component="p" sx={{ mt: 2 }}>
-                  You have learned {wordCount} words.
-                </Typography>
+                <Box sx={{ width: '180px', marginTop: '10px' }}>
+                  <Typography>
+                    Your Progress
+                  </Typography>
+                  <ReactSvgPieChart
+                    data={data}
+                    // If you need expand on hover (or touch) effect
+                    expandOnHover
+                    // If you need custom behavior when sector is hovered (or touched)
+                    onSectorHover={(d, i, e) => {
+                      if (d) {
+                        console.log("Mouse enter - Index:", i, "Data:", d, "Event:", e)
+                      } else {
+                        console.log("Mouse leave - Index:", i, "Event:", e)
+                      }
+                    }}
+                  />
+                </Box>
+
               )}
 
               {loading ? (
@@ -312,7 +324,7 @@ const HomeDetails = () => {
                             <Button
                               key={chapter.id}
                               variant="outlined"
-                               color={
+                              color={
                                 selectedChapter?.id === chapter.id
                                   ? "secondary"
                                   : "primary"
